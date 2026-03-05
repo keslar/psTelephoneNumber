@@ -1,0 +1,39 @@
+name: CodeQL
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+    schedule:
+        # Runs at 03:17 UTC every Monday
+        - cron: "17 3 * * 1"
+
+jobs:
+    analyze:
+        name: Analyze (PowerShell)
+        runs-on: ubuntu-latest
+        permissions:
+            security-events: write
+            packages: read
+            actions: read
+            contents: read
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Initialize CodeQL
+              uses: github/codeql-action/init@v3
+              with:
+                  languages: powershell
+                  # Uses the default CodeQL query suite for PowerShell.
+                  # To use an extended suite: queries: security-extended
+                  queries: security-and-quality
+
+            - name: Perform CodeQL analysis
+              uses: github/codeql-action/analyze@v3
+              with:
+                  category: /language:powershell

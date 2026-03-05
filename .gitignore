@@ -1,0 +1,71 @@
+# PowerShell Module Build Artifacts
+output/
+build/
+release/
+dist/
+
+# Module manifest backup
+*.psd1.bak
+
+# Test Results
+testResults/
+TestResults/
+coverage.xml
+Coverage-Unit.xml
+TestResults.xml
+TestResults-Unit.xml
+
+
+# PSScriptAnalyzer
+PSScriptAnalyzerResults.*
+
+# Pester
+CodeCoverage.*
+
+# NuGet
+*.nupkg
+packages/
+
+# dotnet
+bin/
+obj/
+
+# Visual Studio / VSCode
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# VSCode workspace settings (optional - remove if you want to track these)
+# .vscode/
+
+# OS Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+._*
+
+# Temp files
+*~
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Log files
+*.log
+
+# Secrets / credentials
+*.pfx
+*.key
+*.pem
+apikey*.txt
+secrets.ps1
+
+# PSDepend
+dependency/
+
+# ModuleBuilder
+staging/

@@ -1,0 +1,246 @@
+CountryName,Code,ISO2,ISO3,NumericCode
+"Afghanistan", "+93", "AF", "AFG", 93
+"Albania", "+355", "AL", "ALB", 355
+"Algeria", "+213", "DZ", "DZA", 213
+"American Samoa", "+1-684", "AS", "ASM", 1
+"Andorra", "+376", "AD", "AND", 376
+"Angola", "+244", "AO", "AGO", 244
+"Anguilla", "+1-264", "AI", "AIA", 1
+"Antarctica", "+672", "AQ", "ATA", 672
+"Antigua and Barbuda", "+1-268", "AG", "ATG", 1
+"Argentina", "+54", "AR", "ARG", 54
+"Armenia", "+374", "AM", "ARM", 374
+"Aruba", "+297", "AW", "ABW", 297
+"Australia", "+61", "AU", "AUS", 61
+"Austria", "+43", "AT", "AUT", 43
+"Azerbaijan", "+994", "AZ", "AZE", 994
+"Bahamas", "+1-242", "BS", "BHS", 1
+"Bahrain", "+973", "BH", "BHR", 973
+"Bangladesh", "+880", "BD", "BGD", 880
+"Barbados", "+1-246", "BB", "BRB", 1
+"Belarus", "+375", "BY", "BLR", 375
+"Belgium", "+32", "BE", "BEL", 32
+"Belize", "+501", "BZ", "BLZ", 501
+"Benin", "+229", "BJ", "BEN", 229
+"Bermuda", "+1-441", "BM", "BMU", 1
+"Bhutan", "+975", "BT", "BTN", 975
+"Bolivia", "+591", "BO", "BOL", 591
+"Bonaire, Sint Eustatius and Saba", "+599", "BQ", "BES", 599
+"Bosnia and Herzegovina", "+387", "BA", "BIH", 387
+"Botswana", "+267", "BW", "BWA", 267
+"Brazil", "+55", "BR", "BRA", 55
+"British Indian Ocean Territory", "+246", "IO", "IOT", 246
+"British Virgin Islands", "+1-284", "VG", "VGB", 1
+"Brunei", "+673", "BN", "BRN", 673
+"Bulgaria", "+359", "BG", "BGR", 359
+"Burkina Faso", "+226", "BF", "BFA", 226
+"Burundi", "+257", "BI", "BDI", 257
+"Cambodia", "+855", "KH", "KHM", 855
+"Cameroon", "+237", "CM", "CMR", 237
+"Canada", "+1", "CA", "CAN", 1
+"Cape Verde", "+238", "CV", "CPV", 238
+"Cayman Islands", "+1-345", "KY", "CYM", 1
+"Central African Republic", "+236", "CF", "CAF", 236
+"Chad", "+235", "TD", "TCD", 235
+"Chile", "+56", "CL", "CHL", 56
+"China", "+86", "CN", "CHN", 86
+"Christmas Island", "+61", "CX", "CXR", 61
+"Cocos Islands", "+61", "CC", "CCK", 61
+"Colombia", "+57", "CO", "COL", 57
+"Comoros", "+269", "KM", "COM", 269
+"Cook Islands", "+682", "CK", "COK", 682
+"Costa Rica", "+506", "CR", "CRI", 506
+"Croatia", "+385", "HR", "HRV", 385
+"Cuba", "+53", "CU", "CUB", 53
+"Curacao", "+599", "CW", "CUW", 599
+"Cyprus", "+357", "CY", "CYP", 357
+"Czech Republic", "+420", "CZ", "CZE", 420
+"Democratic Republic of the Congo", "+243", "CD", "COD", 243
+"Denmark", "+45", "DK", "DNK", 45
+"Djibouti", "+253", "DJ", "DJI", 253
+"Dominica", "+1-767", "DM", "DMA", 1
+"Dominican Republic", "+1-809", "DO", "DOM", 1
+"East Timor", "+670", "TL", "TLS", 670
+"Ecuador", "+593", "EC", "ECU", 593
+"Egypt", "+20", "EG", "EGY", 20
+"El Salvador", "+503", "SV", "SLV", 503
+"Equatorial Guinea", "+240", "GQ", "GNQ", 240
+"Eritrea", "+291", "ER", "ERI", 291
+"Estonia", "+372", "EE", "EST", 372
+"Ethiopia", "+251", "ET", "ETH", 251
+"Falkland Islands", "+500", "FK", "FLK", 500
+"Faroe Islands", "+298", "FO", "FRO", 298
+"Fiji", "+679", "FJ", "FJI", 679
+"Finland", "+358", "FI", "FIN", 358
+"France", "+33", "FR", "FRA", 33
+"French Guiana", "+594", "GF", "GUF", 594
+"French Polynesia", "+689", "PF", "PYF", 689
+"Gabon", "+241", "GA", "GAB", 241
+"Gambia", "+220", "GM", "GMB", 220
+"Guadeloupe", "+590", "GP", "GLP", 590
+"Georgia", "+995", "GE", "GEO", 995
+"Germany", "+49", "DE", "DEU", 49
+"Ghana", "+233", "GH", "GHA", 233
+"Gibraltar", "+350", "GI", "GIB", 350
+"Greece", "+30", "GR", "GRC", 30
+"Greenland", "+299", "GL", "GRL", 299
+"Grenada", "+1-473", "GD", "GRD", 1
+"Guam", "+1-671", "GU", "GUM", 1
+"Guatemala", "+502", "GT", "GTM", 502
+"Guernsey", "+44-1481", "GG", "GGY", 44
+"Guinea", "+224", "GN", "GIN", 224
+"Guinea-Bissau", "+245", "GW", "GNB", 245
+"Guyana", "+592", "GY", "GUY", 592
+"Haiti", "+509", "HT", "HTI", 509
+"Honduras", "+504", "HN", "HND", 504
+"Hong Kong", "+852", "HK", "HKG", 852
+"Hungary", "+36", "HU", "HUN", 36
+"Iceland", "+354", "IS", "ISL", 354
+"India", "+91", "IN", "IND", 91
+"Indonesia", "+62", "ID", "IDN", 62
+"Iran", "+98", "IR", "IRN", 98
+"Iraq", "+964", "IQ", "IRQ", 964
+"Ireland", "+353", "IE", "IRL", 353
+"Isle of Man", "+44-1624", "IM", "IMN", 44
+"Israel", "+972", "IL", "ISR", 972
+"Italy", "+39", "IT", "ITA", 39
+"Ivory Coast", "+225", "CI", "CIV", 225
+"Jamaica", "+1-876", "JM", "JAM", 1
+"Japan", "+81", "JP", "JPN", 81
+"Jersey", "+44-1534", "JE", "JEY", 44
+"Jordan", "+962", "JO", "JOR", 962
+"Kazakhstan", "+7", "KZ", "KAZ", 7
+"Kenya", "+254", "KE", "KEN", 254
+"Kiribati", "+686", "KI", "KIR", 686
+"Kosovo", "+383", "XK", "XKX", 383
+"Kuwait", "+965", "KW", "KWT", 965
+"Kyrgyzstan", "+996", "KG", "KGZ", 996
+"Laos", "+856", "LA", "LAO", 856
+"Latvia", "+371", "LV", "LVA", 371
+"Lebanon", "+961", "LB", "LBN", 961
+"Lesotho", "+266", "LS", "LSO", 266
+"Liberia", "+231", "LR", "LBR", 231
+"Libya", "+218", "LY", "LBY", 218
+"Liechtenstein", "+423", "LI", "LIE", 423
+"Lithuania", "+370", "LT", "LTU", 370
+"Luxembourg", "+352", "LU", "LUX", 352
+"Macau", "+853", "MO", "MAC", 853
+"Macedonia", "+389", "MK", "MKD", 389
+"Madagascar", "+261", "MG", "MDG", 261
+"Malawi", "+265", "MW", "MWI", 265
+"Malaysia", "+60", "MY", "MYS", 60
+"Maldives", "+960", "MV", "MDV", 960
+"Mali", "+223", "ML", "MLI", 223
+"Malta", "+356", "MT", "MLT", 356
+"Marshall Islands", "+692", "MH", "MHL", 692
+"Martinique", "+596", "MQ", "MTQ", 596
+"Mauritania", "+222", "MR", "MRT", 222
+"Mauritius", "+230", "MU", "MUS", 230
+"Mayotte", "+262", "YT", "MYT", 262
+"Mexico", "+52", "MX", "MEX", 52
+"Micronesia", "+691", "FM", "FSM", 691
+"Moldova", "+373", "MD", "MDA", 373
+"Monaco", "+377", "MC", "MCO", 377
+"Mongolia", "+976", "MN", "MNG", 976
+"Montenegro", "+382", "ME", "MNE", 382
+"Montserrat", "+1-664", "MS", "MSR", 1
+"Morocco", "+212", "MA", "MAR", 212
+"Mozambique", "+258", "MZ", "MOZ", 258
+"Myanmar", "+95", "MM", "MMR", 95
+"Namibia", "+264", "NA", "NAM", 264
+"Nauru", "+674", "NR", "NRU", 674
+"Nepal", "+977", "NP", "NPL", 977
+"Netherlands", "+31", "NL", "NLD", 31
+"Netherlands Antilles", "+599", "AN", "ANT", 599
+"New Caledonia", "+687", "NC", "NCL", 687
+"New Zealand", "+64", "NZ", "NZL", 64
+"Nicaragua", "+505", "NI", "NIC", 505
+"Niger", "+227", "NE", "NER", 227
+"Nigeria", "+234", "NG", "NGA", 234
+"Niue", "+683", "NU", "NIU", 683
+"Norfolk Island", "+672-3", "NF", "NFK", 672
+"North Korea", "+850", "KP", "PRK", 850
+"Northern Mariana Islands", "+1-670", "MP", "MNP", 1
+"Norway", "+47", "NO", "NOR", 47
+"Oman", "+968", "OM", "OMN", 968
+"Pakistan", "+92", "PK", "PAK", 92
+"Palau", "+680", "PW", "PLW", 680
+"Palestine", "+970", "PS", "PSE", 970
+"Panama", "+507", "PA", "PAN", 507
+"Papua New Guinea", "+675", "PG", "PNG", 675
+"Paraguay", "+595", "PY", "PRY", 595
+"Peru", "+51", "PE", "PER", 51
+"Philippines", "+63", "PH", "PHL", 63
+"Pitcairn", "+64", "PN", "PCN", 64
+"Poland", "+48", "PL", "POL", 48
+"Portugal", "+351", "PT", "PRT", 351
+"Puerto Rico", "+1-787", "PR", "PRI", 1
+"Qatar", "+974", "QA", "QAT", 974
+"Republic of the Congo", "+242", "CG", "COG", 242
+"Reunion", "+262", "RE", "REU", 262
+"Romania", "+40", "RO", "ROU", 40
+"Russia", "+7", "RU", "RUS", 7
+"Rwanda", "+250", "RW", "RWA", 250
+"Saint Barthelemy", "+590", "BL", "BLM", 590
+"Saint Helena", "+290", "SH", "SHN", 290
+"Saint Kitts and Nevis", "+1-869", "KN", "KNA", 1
+"Saint Lucia", "+1-758", "LC", "LCA", 1
+"Saint Martin", "+590", "MF", "MAF", 590
+"Saint Pierre and Miquelon", "+508", "PM", "SPM", 508
+"Saint Vincent and the Grenadines", "+1-784", "VC", "VCT", 1
+"Samoa", "+685", "WS", "WSM", 685
+"San Marino", "+378", "SM", "SMR", 378
+"Sao Tome and Principe", "+239", "ST", "STP", 239
+"Saudi Arabia", "+966", "SA", "SAU", 966
+"Senegal", "+221", "SN", "SEN", 221
+"Serbia", "+381", "RS", "SRB", 381
+"Seychelles", "+248", "SC", "SYC", 248
+"Sierra Leone", "+232", "SL", "SLE", 232
+"Singapore", "+65", "SG", "SGP", 65
+"Sint Maarten", "+1-721", "SX", "SXM", 1
+"Slovakia", "+421", "SK", "SVK", 421
+"Slovenia", "+386", "SI", "SVN", 386
+"Solomon Islands", "+677", "SB", "SLB", 677
+"Somalia", "+252", "SO", "SOM", 252
+"South Africa", "+27", "ZA", "ZAF", 27
+"South Korea", "+82", "KR", "KOR", 82
+"South Sudan", "+211", "SS", "SSD", 211
+"Spain", "+34", "ES", "ESP", 34
+"Sri Lanka", "+94", "LK", "LKA", 94
+"Sudan", "+249", "SD", "SDN", 249
+"Suriname", "+597", "SR", "SUR", 597
+"Svalbard and Jan Mayen", "+47", "SJ", "SJM", 47
+"Swaziland", "+268", "SZ", "SWZ", 268
+"Sweden", "+46", "SE", "SWE", 46
+"Switzerland", "+41", "CH", "CHE", 41
+"Syria", "+963", "SY", "SYR", 963
+"Taiwan", "+886", "TW", "TWN", 886
+"Tajikistan", "+992", "TJ", "TJK", 992
+"Tanzania", "+255", "TZ", "TZA", 255
+"Thailand", "+66", "TH", "THA", 66
+"Togo", "+228", "TG", "TGO", 228
+"Tokelau", "+690", "TK", "TKL", 690
+"Tonga", "+676", "TO", "TON", 676
+"Trinidad and Tobago", "+1-868", "TT", "TTO", 1
+"Tunisia", "+216", "TN", "TUN", 216
+"Turkey", "+90", "TR", "TUR", 90
+"Turkmenistan", "+993", "TM", "TKM", 993
+"Turks and Caicos Islands", "+1-649", "TC", "TCA", 1
+"Tuvalu", "+688", "TV", "TUV", 688
+"U.S. Virgin Islands", "+1-340", "VI", "VIR", 1
+"Uganda", "+256", "UG", "UGA", 256
+"Ukraine", "+380", "UA", "UKR", 380
+"United Arab Emirates", "+971", "AE", "ARE", 971
+"United Kingdom", "+44", "GB", "GBR", 44
+"United States", "+1", "US", "USA", 1
+"Uruguay", "+598", "UY", "URY", 598
+"Uzbekistan", "+998", "UZ", "UZB", 998
+"Vanuatu", "+678", "VU", "VUT", 678
+"Vatican", "+379", "VA", "VAT", 379
+"Venezuela", "+58", "VE", "VEN", 58
+"Vietnam", "+84", "VN", "VNM", 84
+"Wallis and Futuna", "+681", "WF", "WLF", 681
+"Western Sahara", "+212", "EH", "ESH", 212
+"Yemen", "+967", "YE", "YEM", 967
+"Zambia", "+260", "ZM", "ZMB", 260
+"Zimbabwe", "+263", "ZW", "ZWE", 263

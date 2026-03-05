@@ -1,0 +1,122 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - "**"
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    ci:
+        name: ${{ matrix.name }}
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - name: Windows - PowerShell 5.1
+                      os: windows-latest
+                      shell: powershell
+
+                    - name: Windows - PowerShell 7
+                      os: windows-latest
+                      shell: pwsh
+
+                    - name: Ubuntu - PowerShell 7
+                      os: ubuntu-latest
+                      shell: pwsh
+
+        defaults:
+            run:
+                shell: ${{ matrix.shell }}
+
+        steps:
+            # -----------------------------------------------------------------------
+            # 1. Checkout
+            # -----------------------------------------------------------------------
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            # -----------------------------------------------------------------------
+            # 2. Install dependencies
+            #    RequiredModules.psd1 lists every tool the build needs. We bootstrap
+            #    PowerShellGet 2.x first, then install each entry individually.
+            #    MinimumVersion is parsed from the NuGet range lower bound so that
+            #    Install-Module gets the closest compatible version.
+            # -----------------------------------------------------------------------
+            - name: Bootstrap PowerShellGet
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  Install-Module -Name PowerShellGet -RequiredVersion 2.0.4 `
+                      -Force -Scope CurrentUser -AllowClobber -SkipPublisherCheck
+
+            - name: Install required modules
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  $modules = Import-PowerShellDataFile (Join-Path $env:GITHUB_WORKSPACE 'RequiredModules.psd1')
+                  foreach ($name in $modules.Keys) {
+                      $spec       = $modules[$name]
+                      $minVersion = ($spec -replace '^[\[\(]([^,]+),.+$', '$1').Trim()
+                      Write-Host "Installing $name >= $minVersion"
+                      Install-Module -Name $name -MinimumVersion $minVersion `
+                          -Scope CurrentUser -Force -AllowClobber -SkipPublisherCheck -ErrorAction Stop
+                  }
+
+            # -----------------------------------------------------------------------
+            # 3. Analyze
+            # -----------------------------------------------------------------------
+            - name: Run PSScriptAnalyzer
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  Invoke-Build Analyze
+
+            # -----------------------------------------------------------------------
+            # 4. Build
+            # -----------------------------------------------------------------------
+            - name: Build module
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  Invoke-Build Build
+
+            # -----------------------------------------------------------------------
+            # 5. Unit tests
+            # -----------------------------------------------------------------------
+            - name: Run unit tests
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  Invoke-Build TestUnit
+
+            - name: Upload unit test results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: unit-test-results-${{ matrix.os }}-${{ matrix.shell }}
+                  path: TestResults-Unit.xml
+                  if-no-files-found: warn
+
+            - name: Upload code coverage report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage-${{ matrix.os }}-${{ matrix.shell }}
+                  path: Coverage-Unit.xml
+                  if-no-files-found: warn
+
+            # -----------------------------------------------------------------------
+            # 6. Integration tests
+            # -----------------------------------------------------------------------
+            - name: Run integration tests
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  Invoke-Build TestIntegration
+
+            - name: Upload integration test results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: integration-test-results-${{ matrix.os }}-${{ matrix.shell }}
+                  path: TestResults-Integration.xml
+                  if-no-files-found: warn

@@ -1,0 +1,131 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  release:
+    name: Build, Test, Publish, and Release
+    runs-on: windows-latest
+
+    permissions:
+      contents: write # Required to create a GitHub Release
+
+    steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout — full history so git describe works if needed
+      # -----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # -----------------------------------------------------------------------
+      # 2. Resolve version from the pushed tag (strips the leading 'v')
+      # -----------------------------------------------------------------------
+      - name: Resolve version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $tag     = '${{ github.ref_name }}'
+          $semver  = $tag.TrimStart('v')
+          Write-Host "Tag: $tag  SemVer: $semver"
+          "semver=$semver" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      # -----------------------------------------------------------------------
+      # 3. Install dependencies
+      # -----------------------------------------------------------------------
+      - name: Bootstrap PowerShellGet
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Install-Module -Name PowerShellGet -RequiredVersion 2.0.4 `
+              -Force -Scope CurrentUser -AllowClobber -SkipPublisherCheck
+
+      - name: Install required modules
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $modules = Import-PowerShellDataFile (Join-Path $env:GITHUB_WORKSPACE 'RequiredModules.psd1')
+          foreach ($name in $modules.Keys) {
+              $spec       = $modules[$name]
+              $minVersion = ($spec -replace '^[\[\(]([^,]+),.+$', '$1').Trim()
+              Write-Host "Installing $name >= $minVersion"
+              Install-Module -Name $name -MinimumVersion $minVersion `
+                  -Scope CurrentUser -Force -AllowClobber -SkipPublisherCheck -ErrorAction Stop
+          }
+
+      # -----------------------------------------------------------------------
+      # 4. Full release pipeline: Clean → Analyze → Build → Test → Publish
+      #    The Release task in .build.ps1 runs all of these in order.
+      #    PS_GALLERY_KEY is passed as GalleryApiKey so .build.ps1 can use it.
+      # -----------------------------------------------------------------------
+      - name: Run release pipeline
+        shell: pwsh
+        env:
+          PS_GALLERY_KEY: ${{ secrets.PS_GALLERY_KEY }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Invoke-Build Release -SemVer '${{ steps.version.outputs.semver }}'
+
+      - name: Upload unit test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results-release
+          path: TestResults-Unit.xml
+          if-no-files-found: warn
+
+      - name: Upload integration test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results-release
+          path: TestResults-Integration.xml
+          if-no-files-found: warn
+
+      # -----------------------------------------------------------------------
+      # 5. Extract changelog notes for this version
+      #    Reads CHANGELOG.md and captures the section between the first
+      #    '## v<version>' heading and the next '## v' heading.
+      # -----------------------------------------------------------------------
+      - name: Extract changelog notes
+        id: changelog
+        shell: pwsh
+        run: |
+          $semver  = '${{ steps.version.outputs.semver }}'
+          $content = Get-Content '${{ github.workspace }}/CHANGELOG.md' -Raw
+          $escaped = [regex]::Escape($semver)
+          $nl      = "`n"
+          $pattern = "(?ms)^## v$escaped[^$nl]*$nl(.+?)(?=^## v|\z)"
+          if ($content -match $pattern) {
+            $notes = $matches[1].Trim()
+          } else {
+            $notes = "See CHANGELOG.md for details."
+          }
+
+          # Write multiline output using the GitHub Actions heredoc syntax
+          $delimiter = "CHANGELOG_EOF_$(New-Guid)"
+          "notes<<$delimiter"  | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          $notes               | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          $delimiter           | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      # -----------------------------------------------------------------------
+      # 6. Create GitHub Release
+      # -----------------------------------------------------------------------
+      - name: Create GitHub Release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createRelease({
+              owner:            context.repo.owner,
+              repo:             context.repo.repo,
+              tag_name:         '${{ github.ref_name }}',
+              name:             'EmailAddress ${{ github.ref_name }}',
+              body:             `${{ steps.changelog.outputs.notes }}`,
+              draft:            false,
+              prerelease:       false,
+              make_latest:      'true'
+            });
