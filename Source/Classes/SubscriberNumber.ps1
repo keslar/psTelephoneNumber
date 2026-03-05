@@ -46,7 +46,7 @@ class SubscriberNumber {
             }
             $minLength = [int]$format.Min - $maxNDCLength
             $maxLength = [int]$format.Max - $minNDCLength
-            # Check of the length of the subscriber number is within the valid range for the country code            
+            # Check of the length of the subscriber number is within the valid range for the country code
             $lengthCheck = ($numberToValidate.Length -ge $minLength) -and ($numberToValidate.Length -le $maxLength)
             return $lengthCheck
         } catch {
@@ -57,10 +57,22 @@ class SubscriberNumber {
 
     ###############################################
     ############# Static Methods ##################
+    static [void] ClearCache() {
+        $script:cacheTelephoneNumberSubscriberNumberFormats = $null
+    }
+
+    static [void] SetDataDirectory([string]$directory) {
+        if (-not (Test-Path -Path $directory -PathType Container)) {
+            throw [System.IO.DirectoryNotFoundException]::new("The specified directory does not exist: $directory")
+        }
+        $script:cacheTelephoneNumberDataDirectory = $directory
+        [SubscriberNumber]::ClearCache()
+    }
+
     # Get the formats for subscriber numbers from the data file
     static [object[]] GetSubscriberNumberFormats () {
         if ($null -eq $script:cacheTelephoneNumberSubscriberNumberFormats) {
-            $dataFile = Join-Path -Path $env:TELEPHONE_NUMBER_DATA_DIR -ChildPath "SubscriberNumberFormats.csv"
+            $dataFile = Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath "SubscriberNumberFormats.csv"
             if (Test-Path -Path $dataFile) {
                 $script:cacheTelephoneNumberSubscriberNumberFormats = Import-Csv -Path $dataFile
             } else {
