@@ -1,4 +1,4 @@
-function Get-TelephoneNumberNationalDestinationCode {
+function Get-TelephoneNumberSubscriberNumber {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
@@ -8,5 +8,5 @@ function Get-TelephoneNumberNationalDestinationCode {
     if (-not $PhoneNumber.Value) {
         throw "Invalid telephone number format. Please provide a valid number."
     }
-    return $PhoneNumber.GetNationalDestinationCode()
+    return $PhoneNumber.GetSubscriberNumber()
 }
