@@ -4,14 +4,14 @@ BeforeAll {
     # Find the project root by going up three levels from the current script directory
     $ProjectRoot = (Resolve-Path -Literal (Join-Path -Path $PSScriptRoot -ChildPath "..\..\..")).Path
 
-    # Set the data directory to the project Data folder for testing
-    $env:TELEPHONE_NUMBER_DATA_DIR = Join-Path -Path $ProjectRoot -ChildPath "Data"
-    
     #################################################################################
     # Dot-source the necessary files for testing
     #################################################################################
     # Dot-source the prefix file to set up the environment and variables
     . $ProjectRoot/source/prefix.ps1
+
+    # Set the data directory to the project Data folder for testing
+    $script:cacheTelephoneNumberDataDirectory = Join-Path -Path $ProjectRoot -ChildPath "Data"
 
     # Dot-source the CountryCode class file to make it available for testing
     . $ProjectRoot/source/Classes/CountryCode.ps1
@@ -76,7 +76,7 @@ Context "SubscriberNumber Class" {
             }
             It "Should throw an exception if the data file is missing" {
                 # Temporarily rename the data file to simulate it being missing
-                $dataFile = Join-Path -Path $env:TELEPHONE_NUMBER_DATA_DIR -ChildPath "SubscriberNumberFormats.csv"
+                $dataFile = Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath "SubscriberNumberFormats.csv"
                 $tempFile = "$dataFile.bak"
                 Rename-Item -Path $dataFile -NewName $tempFile
                 try {
@@ -85,7 +85,7 @@ Context "SubscriberNumber Class" {
                     # Restore the original file
                     Rename-Item -Path $tempFile -NewName "SubscriberNumberFormats.csv"
                 }
-            }   
+            }
             It "Should return a list of subscriber number formats" {
                 $formats = [SubscriberNumber]::GetSubscriberNumberFormats()
                 $formats | Should -Not -BeNullOrEmpty
@@ -104,7 +104,7 @@ Context "SubscriberNumber Class" {
                 $formats.Count | Should -Be 246
             }
             It "Should return the same number of rows as are in the CSV file" {
-                $dataFile = Join-Path -Path $env:TELEPHONE_NUMBER_DATA_DIR -ChildPath "SubscriberNumberFormats.csv"
+                $dataFile = Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath "SubscriberNumberFormats.csv"
                 $csvData = Import-Csv -Path $dataFile
                 $formats = [SubscriberNumber]::GetSubscriberNumberFormats()
                 $formats.Count | Should -Be $csvData.Count
