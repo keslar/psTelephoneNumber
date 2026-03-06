@@ -53,6 +53,9 @@ $Script:UnitTestsPath = Join-Path -Path $Script:TestsPath   -ChildPath 'Unit'
 $Script:IntTestsPath = Join-Path -Path $Script:TestsPath   -ChildPath 'Integration'
 $Script:AnalyzerSettings = Join-Path -Path $Script:ProjectRoot -ChildPath 'PSScriptAnalyzerSettings.ps1'
 $Script:ConfigPath = Join-Path -Path $Script:ProjectRoot -ChildPath 'Config'
+$Script:Repository = "PSGallery" # default repository, can be overridden by LocalRepo.ps1 in the Config directory if present
+
+$Script:Repository = "PittITPSModules"
 ##
 $Script:AllowSelfSignedCerts = $false
 
@@ -227,7 +230,7 @@ task Sign Build, {
     if ($cert) {
         foreach ( $moduleFile in (Get-ChildItem -Path $Script:BuiltModuleBase -Include *.psd1, *.psm1 -Recurse) ) {
             #Write-Build Green "  Signing: $($moduleFile.FullName) with certificate: $($cert.Subject)"
-            $results = Set-AuthenticodeSignature -FilePath $moduleFile.FullName -Certificate $cert -TimestampServer $timestampServer -HashAlgorithm SHA256
+            #$results = Set-AuthenticodeSignature -FilePath $moduleFile.FullName -Certificate $cert -TimestampServer $timestampServer -HashAlgorithm SHA256
             #Write-Build Green "  Signed module with certificate: $($cert.Subject)"    
         }
         
@@ -248,7 +251,7 @@ task Build {
     $buildParams = @{
         SourcePath      = $Script:SourcePath
         OutputDirectory = $Script:BuildOutput
-        SemVer          = $version
+        SemVer          = $version.Replace('-', '.')
     }
 
     $module = Build-Module @buildParams -Passthru
@@ -366,6 +369,12 @@ task Test TestUnit, TestIntegration
 # Publish — publish the built module to the PowerShell Gallery
 #------------------------------------------------------------------------------
 task Publish Build, Test, {
+    # Register Repository if needed (e.g. if using the Pitt Teams repo during development)
+    if ( $Script:Repository -eq 'PittTeams' ) {
+        Write-Build Cyan "Registering Pitt Teams repository for publication..."
+        Register-PittTeamsRepository -Name PittITPSModules -URI \\pittitteams.file.core.windows.net\psmodules -Trusted
+    }
+
     Write-Build Cyan 'Publishing to PowerShell Gallery...'
 
     if (-not $Script:BuiltModuleBase) {
@@ -381,8 +390,9 @@ task Publish Build, Test, {
         Write-Build Green "  Published $Script:ModuleName $Script:BuiltVersion to the PowerShell Gallery."
     } else {
         Write-Build Yellow "  Repository is set to $Script:Repository. Skipping publication to PowerShell Gallery."
+        Publish-PSResource -Path $BuiltModuleBase -Repository $Script:Repository # -NuGetApiKey $GalleryApiKey
+        Write-Build Green "  Published $Script:ModuleName $Script:BuiltVersion to repository $Script:Repository."
     }
-    
 }
 
 #------------------------------------------------------------------------------
