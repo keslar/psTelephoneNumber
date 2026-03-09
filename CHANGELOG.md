@@ -1,3 +1,12 @@
+## 0.0.4
+
+## 0.0.4
+
+## 0.0.3
+
+### Fixed
+- Fixinf versions
+
 # CHANGELOG
 
 ## v<version> (<release_date>)

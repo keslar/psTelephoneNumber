@@ -1,0 +1,16 @@
+Register-PSResourceRepository -Name PittDigital `
+     -Uri \\pittitteams.file.core.windows.net\psmodules `
+     -Trusted `
+     -ApiVersion local
+
+
+Register-PSRepository -Name 'PittDigital' `
+    -SourceLocation '\\pittitteams.file.core.windows.net\psmodules' `
+    -PublishLocation '\\pittitteams.file.core.windows.net\psmodules' `
+    -InstallationPolicy Trusted
+
+    
+
+To build and release a major version:
+
+.\build.ps1 -Release -SemVer 2.0.0 -PushTag
