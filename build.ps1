@@ -102,6 +102,10 @@ param(
     [switch]$Release
 )
 
+if (($SemVer -or $VersionBump) -and -not $Release -and -not ($Task -and $Task.Count -gt 0)) {
+    Write-Warning "-SemVer and -VersionBump have no effect without -Release or -Task. Did you mean: .\build.ps1 -Release -SemVer $SemVer"
+}
+
 ###############################################################################
 # Resolve build file
 ###############################################################################
@@ -150,18 +154,18 @@ $ibParams = @{
 }
 
 # Invoke-Build passes these through as named parameters to .build.ps1's param() block
-if ($SemVer)      { $ibParams['SemVer']      = $SemVer      }
+if ($SemVer) { $ibParams['SemVer'] = $SemVer }
 if ($VersionBump) { $ibParams['VersionBump'] = $VersionBump }
-if ($PushTag)     { $ibParams['PushTag']     = $true        }
+if ($PushTag) { $ibParams['PushTag'] = $true }
 
 ###############################################################################
 # Execute
 ###############################################################################
 Write-Host ''
 Write-Host "Tasks : $($tasksToRun -join ' → ')" -ForegroundColor Cyan
-if ($SemVer)      { Write-Host "SemVer      : $SemVer"      -ForegroundColor DarkCyan }
+if ($SemVer) { Write-Host "SemVer      : $SemVer"      -ForegroundColor DarkCyan }
 if ($VersionBump) { Write-Host "VersionBump : $VersionBump" -ForegroundColor DarkCyan }
-if ($PushTag)     { Write-Host "PushTag     : true"         -ForegroundColor DarkCyan }
+if ($PushTag) { Write-Host "PushTag     : true"         -ForegroundColor DarkCyan }
 Write-Host ''
 
 if ($PSCmdlet.ShouldProcess($buildFile, "Invoke-Build $($tasksToRun -join ', ')")) {
