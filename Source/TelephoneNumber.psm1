@@ -1,4 +1,4 @@
-$sourceDirectories = @('ENUMs', 'Classes', 'Public', 'Private')$helpersPath = Join-Path -Path $PSScriptRoot -ChildPath "Helpers"
+$sourceDirectories = @('ENUMs', 'Classes', 'Public', 'Private')
 
 if (Test-Path -Path '.\.prefix.ps1') {
     . .\.prefix.ps1
