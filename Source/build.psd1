@@ -25,7 +25,7 @@
     )
 
     # Public functions to export (by default, everything in Public/)
-    # PublicFilter = "Public/*.ps1"
+    PublicFilter             = "Public/*.ps1"
 
     # Copy additional files into the output (not merged into .psm1)
     CopyPaths                = @(
