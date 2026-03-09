@@ -10,6 +10,8 @@ dist/
 # Test Results
 testResults/
 TestResults/
+Tests/Results/
+TestResults-Integration.xml
 coverage.xml
 Coverage-Unit.xml
 TestResults.xml
