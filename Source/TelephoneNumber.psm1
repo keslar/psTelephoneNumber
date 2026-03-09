@@ -15,6 +15,6 @@ foreach ( $dir in $sourceDirectories) {
     } 
 }   
 
-if (Test-Path -Path '.\.prefix.ps1') {
-    . .\.prefix.ps1
+if (Test-Path -Path '.\.suffix.ps1') {
+    . .\.suffix.ps1
 }
