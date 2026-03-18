@@ -112,7 +112,7 @@ Describe "CountryCode Class" {
                 $saved = $script:cacheTelephoneNumberDataDirectory
                 $newDir = ".."
                 [CountryCode]::SetDataDirectory($newDir)
-                $script:cacheTelephoneNumberDataDirectory | Should -Be Split-Path -Path (Get-Location) -Parent
+                $script:cacheTelephoneNumberDataDirectory | Should -Be (Split-Path -Path (Get-Location) -Parent)
                 # Restore original value after test
                 [CountryCode]::SetDataDirectory($saved)
             }

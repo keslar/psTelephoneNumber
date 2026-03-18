@@ -348,7 +348,7 @@ Describe "NationalDestinationCode Class" {
         It "4.2.1 Should change the data directory when setting DataDirectory" {
             $newDir = ".."
             [NationalDestinationCode]::SetDataDirectory($newDir)
-            $script:cacheTelephoneNumberDataDirectory | Should -Be Split-Path -Path (Get-Location) -Parent
+            $script:cacheTelephoneNumberDataDirectory | Should -Be (Split-Path -Path (Get-Location) -Parent)
             # Restore original value after test
             [NationalDestinationCode]::SetDataDirectory($savedDataDirectory)
         }
