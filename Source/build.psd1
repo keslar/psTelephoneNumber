@@ -30,7 +30,7 @@
     # Copy additional files into the output (not merged into .psm1)
     CopyPaths                = @(
         'en-US'          # Localization
-        '../data'           # Data files
+        '../Data'           # Data files
         # 'lib/some.dll'
     )
 
