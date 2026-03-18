@@ -346,7 +346,7 @@ Describe "NationalDestinationCode Class" {
             $script:cacheTelephoneNumberDataDirectory = $savedDataDirectory
         }
         It "4.2.1 Should change the data directory when setting DataDirectory" {
-            $newDir = "C:\"
+            $newDir = "./baddata"
             [NationalDestinationCode]::SetDataDirectory($newDir)
             $script:cacheTelephoneNumberDataDirectory | Should -Be $newDir
             # Restore original value after test
