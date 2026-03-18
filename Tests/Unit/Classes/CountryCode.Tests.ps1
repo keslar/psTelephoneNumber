@@ -110,7 +110,7 @@ Describe "CountryCode Class" {
             }
             It "3.1.1 Should change the data directory when setting DataDirectory" {
                 $saved = $script:cacheTelephoneNumberDataDirectory
-                $newDir = ".."
+                $newDir = (Split-Path -Path (Get-Location) -Parent)
                 [CountryCode]::SetDataDirectory($newDir)
                 $script:cacheTelephoneNumberDataDirectory | Should -Be (Split-Path -Path (Get-Location) -Parent)
                 # Restore original value after test
