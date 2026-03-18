@@ -9,50 +9,27 @@ on:
             - main
 
 jobs:
-    ci:
-        name: ${{ matrix.name }}
-        runs-on: ${{ matrix.os }}
-
-        strategy:
-            fail-fast: false
-            matrix:
-                include:
-                    - name: Windows - PowerShell 5.1
-                      os: windows-latest
-                      shell: powershell
-
-                    - name: Windows - PowerShell 7
-                      os: windows-latest
-                      shell: pwsh
-
-                    - name: Ubuntu - PowerShell 7
-                      os: ubuntu-latest
-                      shell: pwsh
+    # -----------------------------------------------------------------------
+    # Ubuntu Job (PowerShell 7)
+    # -----------------------------------------------------------------------
+    ci-ubuntu:
+        name: Ubuntu - PowerShell 7
+        runs-on: ubuntu-latest
 
         defaults:
             run:
-                shell: ${{ matrix.shell }}
+                shell: pwsh
 
         steps:
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             # 1. Checkout
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             # 2. Install dependencies
-            #    RequiredModules.psd1 lists every tool the build needs. We bootstrap
-            #    PowerShellGet 2.x first, then install each entry individually.
-            #    MinimumVersion is parsed from the NuGet range lower bound so that
-            #    Install-Module gets the closest compatible version.
-            # -----------------------------------------------------------------------
-            - name: Bootstrap PowerShellGet
-              run: |
-                  $ErrorActionPreference = 'Stop'
-                  Install-Module -Name PowerShellGet -RequiredVersion 2.0.4 `
-                      -Force -Scope CurrentUser -AllowClobber -SkipPublisherCheck
-
+            # -------------------------------------------------------------------
             - name: Install required modules
               run: |
                   $ErrorActionPreference = 'Stop'
@@ -65,35 +42,35 @@ jobs:
                           -Scope CurrentUser -Force -AllowClobber -SkipPublisherCheck -ErrorAction Stop
                   }
 
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             # 3. Analyze
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             - name: Run PSScriptAnalyzer
               run: |
                   $ErrorActionPreference = 'Stop'
-                  Invoke-Build Analyze
+                  Invoke-Build Analyze -File ./Build/.build.ps1
 
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             # 4. Build
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             - name: Build module
               run: |
                   $ErrorActionPreference = 'Stop'
-                  Invoke-Build Build
+                  Invoke-Build Build -File ./Build/.build.ps1
 
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             # 5. Unit tests
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             - name: Run unit tests
               run: |
                   $ErrorActionPreference = 'Stop'
-                  Invoke-Build TestUnit
+                  Invoke-Build TestUnit -File ./Build/.build.ps1
 
             - name: Upload unit test results
               if: always()
               uses: actions/upload-artifact@v4
               with:
-                  name: unit-test-results-${{ matrix.os }}-${{ matrix.shell }}
+                  name: unit-test-results-ubuntu-pwsh
                   path: TestResults-Unit.xml
                   if-no-files-found: warn
 
@@ -101,22 +78,122 @@ jobs:
               if: always()
               uses: actions/upload-artifact@v4
               with:
-                  name: coverage-${{ matrix.os }}-${{ matrix.shell }}
+                  name: coverage-ubuntu-pwsh
                   path: Coverage-Unit.xml
                   if-no-files-found: warn
 
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             # 6. Integration tests
-            # -----------------------------------------------------------------------
+            # -------------------------------------------------------------------
             - name: Run integration tests
               run: |
                   $ErrorActionPreference = 'Stop'
-                  Invoke-Build TestIntegration
+                  Invoke-Build TestIntegration -File ./Build/.build.ps1
+
+            - name: Upload integration test results
+              if: always()
+              uses: actions/upload-artifact@v5
+              with:
+                  name: integration-test-results-ubuntu-pwsh
+                  path: TestResults-Integration.xml
+                  if-no-files-found: warn
+
+    # -----------------------------------------------------------------------
+    # Windows Job (PowerShell 5.1)
+    # Skipped automatically when running under `act`
+    # -----------------------------------------------------------------------
+    ci-windows:
+        name: Windows - PowerShell 5.1
+        runs-on: windows-latest
+
+        defaults:
+            run:
+                shell: powershell
+
+        steps:
+            # -------------------------------------------------------------------
+            # 1. Checkout
+            # -------------------------------------------------------------------
+            - name: Checkout repository
+              uses: actions/checkout@v5
+
+            # -------------------------------------------------------------------
+            # 2. Bootstrap PowerShellGet
+            # -------------------------------------------------------------------
+            - name: Bootstrap PowerShellGet
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  Import-Module PowerShellGet -Force
+                  Install-Module -Name PowerShellGet -RequiredVersion 2.0.4 `
+                      -Force -Scope CurrentUser -AllowClobber -SkipPublisherCheck
+
+            # -------------------------------------------------------------------
+            # 3. Install dependencies
+            # -------------------------------------------------------------------
+            - name: Install required modules
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  $modules = Import-PowerShellDataFile (Join-Path $env:GITHUB_WORKSPACE 'RequiredModules.psd1')
+                  foreach ($name in $modules.Keys) {
+                      $spec       = $modules[$name]
+                      $minVersion = ($spec -replace '^[\[\(]([^,]+),.+$', '$1').Trim()
+                      Write-Host "Installing $name >= $minVersion"
+                      Install-Module -Name $name -MinimumVersion $minVersion `
+                          -Scope CurrentUser -Force -AllowClobber -SkipPublisherCheck -ErrorAction Stop
+                  }
+
+            # -------------------------------------------------------------------
+            # 4. Analyze
+            # -------------------------------------------------------------------
+            - name: Run PSScriptAnalyzer
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  Invoke-Build Analyze -File ./Build/.build.ps1
+
+            # -------------------------------------------------------------------
+            # 5. Build
+            # -------------------------------------------------------------------
+            - name: Build module
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  Invoke-Build Build -File ./Build/.build.ps1
+
+            # -------------------------------------------------------------------
+            # 6. Unit tests
+            # -------------------------------------------------------------------
+            - name: Run unit tests
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  Invoke-Build TestUnit -File ./Build/.build.ps1
+
+            - name: Upload unit test results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: unit-test-results-windows-ps51
+                  path: TestResults-Unit.xml
+                  if-no-files-found: warn
+
+            - name: Upload code coverage report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage-windows-ps51
+                  path: Coverage-Unit.xml
+                  if-no-files-found: warn
+
+            # -------------------------------------------------------------------
+            # 7. Integration tests
+            # -------------------------------------------------------------------
+            - name: Run integration tests
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  Invoke-Build TestIntegration -File ./Build/.build.ps1
 
             - name: Upload integration test results
               if: always()
               uses: actions/upload-artifact@v4
               with:
-                  name: integration-test-results-${{ matrix.os }}-${{ matrix.shell }}
+                  name: integration-test-results-windows-ps51
                   path: TestResults-Integration.xml
                   if-no-files-found: warn

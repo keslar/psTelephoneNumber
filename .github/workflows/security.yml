@@ -1,0 +1,171 @@
+name: Security
+
+on:
+    pull_request:
+        branches: [main] # catch issues before they land on main
+
+    push:
+        branches: [main] # re-scan after merge
+
+    schedule:
+        - cron:
+              "0 3 * * 1" # weekly Monday 3am — catches newly disclosed vulns
+              # even when no code has changed
+
+    workflow_dispatch: # manual trigger for on-demand scans
+
+jobs:
+    # ---------------------------------------------------------------
+    # 1. Secret scanning — finds hardcoded creds, tokens, keys
+    # ---------------------------------------------------------------
+    secret-scan:
+        name: Secret scanning
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                  fetch-depth: 0 # full history so trufflehog can diff commits
+
+            - name: Run TruffleHog
+              uses: trufflesecurity/trufflehog@main
+              with:
+                  path: ./
+                  base: ${{ github.event.repository.default_branch }}
+                  head: HEAD
+                  extra_args: --only-verified # drop this if you want unverified hits too
+
+    # ---------------------------------------------------------------
+    # 2. Static analysis — PSScriptAnalyzer with security-focused rules
+    # ---------------------------------------------------------------
+    static-analysis:
+        name: PSScriptAnalyzer (security rules)
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                shell: pwsh
+        steps:
+            - uses: actions/checkout@v5
+
+            - name: Install PSScriptAnalyzer
+              run: |
+                  Install-Module PSScriptAnalyzer -Force -Scope CurrentUser -SkipPublisherCheck
+
+            - name: Run security rules and emit SARIF
+              run: |
+                  $ErrorActionPreference = 'Stop'
+
+                  # Rules that map closest to what CodeQL would flag
+                  $securityRules = @(
+                    'PSAvoidUsingConvertToSecureStringWithPlainText',
+                    'PSAvoidUsingPlainTextForPassword',
+                    'PSAvoidUsingUsernameAndPasswordParams',
+                    'PSAvoidUsingComputerNameHardcoded',
+                    'PSAvoidUsingInvokeExpression',
+                    'PSAvoidUsingWMICmdlet',
+                    'PSUseShouldProcessForStateChangingFunctions',
+                    'PSAvoidGlobalVars',
+                    'PSAvoidUsingCmdletAliases'
+                  )
+
+                  $results = Invoke-ScriptAnalyzer -Path . -Recurse `
+                    -IncludeRule $securityRules -Severity Warning,Error
+
+                  # Print human-readable summary
+                  $results | Format-Table -AutoSize
+
+                  # Emit SARIF for the GitHub Security tab
+                  $sarif = @{
+                    version = '2.1.0'
+                    '$schema' = 'https://json.schemastore.org/sarif-2.1.0.json'
+                    runs = @(@{
+                      tool = @{ driver = @{ name = 'PSScriptAnalyzer'; version = '1.0.0'; rules = @() } }
+                      results = $results | ForEach-Object {
+                        @{
+                          ruleId   = $_.RuleName
+                          message  = @{ text = $_.Message }
+                          level    = if ($_.Severity -eq 'Error') { 'error' } else { 'warning' }
+                          locations = @(@{
+                            physicalLocation = @{
+                              artifactLocation = @{ uri = $_.ScriptPath.Replace($env:GITHUB_WORKSPACE + '/', '') }
+                              region = @{ startLine = $_.Line; startColumn = $_.Column }
+                            }
+                          })
+                        }
+                      }
+                    })
+                  }
+                  $sarif | ConvertTo-Json -Depth 10 | Set-Content pssa-results.sarif
+
+                  if ($results | Where-Object Severity -eq 'Error') {
+                    Write-Error "PSScriptAnalyzer found Error-level findings. Failing build."
+                    exit 1
+                  }
+
+            - name: Upload SARIF to GitHub Security tab
+              if: always()
+              uses: github/codeql-action/upload-sarif@v3
+              with:
+                  sarif_file: pssa-results.sarif
+                  category: PSScriptAnalyzer
+
+    # ---------------------------------------------------------------
+    # 3. Dependency review — check RequiredModules.psd1 against OSV
+    # ---------------------------------------------------------------
+    dependency-review:
+        name: Dependency review
+        runs-on: ubuntu-latest
+        # Only meaningful on PRs — compares base vs head manifest
+        if: github.event_name == 'pull_request'
+        steps:
+            - uses: actions/checkout@v5
+
+            - name: Check modules against OSV database
+              shell: pwsh
+              run: |
+                  $ErrorActionPreference = 'Stop'
+                  $modules = Import-PowerShellDataFile (Join-Path $env:GITHUB_WORKSPACE 'RequiredModules.psd1')
+                  $findings = @()
+
+                  foreach ($name in $modules.Keys) {
+                    $spec    = $modules[$name]
+                    $version = ($spec -replace '^[\[\(]([^,]+),.+$', '$1').Trim()
+
+                    $body = @{
+                      version = @{ package = @{ name = $name; ecosystem = 'PSGallery' }; version = $version }
+                    } | ConvertTo-Json -Depth 5
+
+                    try {
+                      $resp = Invoke-RestMethod -Uri 'https://api.osv.dev/v1/query' `
+                        -Method POST -Body $body -ContentType 'application/json'
+                      if ($resp.vulns) {
+                        $findings += [PSCustomObject]@{ Module = $name; Version = $version; Vulns = $resp.vulns.Count }
+                      }
+                    } catch {
+                      Write-Warning "OSV query failed for $name — skipping"
+                    }
+                  }
+
+                  if ($findings) {
+                    $findings | Format-Table -AutoSize
+                    Write-Error "Vulnerable module versions found."
+                    exit 1
+                  } else {
+                    Write-Host "No known vulnerabilities found in RequiredModules.psd1"
+                  }
+
+    # ---------------------------------------------------------------
+    # 4. SBOM — software bill of materials (runs on main only)
+    # ---------------------------------------------------------------
+    sbom:
+        name: Generate SBOM
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        steps:
+            - uses: actions/checkout@v5
+
+            - name: Generate SBOM
+              uses: anchore/sbom-action@v0
+              with:
+                  path: ./
+                  format: cyclonedx-json
+                  artifact-name: sbom.cyclonedx.json
