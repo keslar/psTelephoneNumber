@@ -11,11 +11,11 @@ BeforeAll {
     # Dot-source the necessary files for testing
     #################################################################################
     # Dot-source the prefix file to set up the environment and variables
-    . $ProjectRoot/source/prefix.ps1
+    . $ProjectRoot/Source/prefix.ps1
     
     # Dot-source the CountryCode class file to make it available for testing
-    . $ProjectRoot/source/Classes/CountryCode.ps1
-    . $ProjectRoot/source/Classes/NationalDestinationCode.ps1
+    . $ProjectRoot/Source/Classes/CountryCode.ps1
+    . $ProjectRoot/Source/Classes/NationalDestinationCode.ps1
 
     # Create a sample CountryCode object for testing
     #$countryCodeUS = [CountryCode]::new("United States", "+1", "US", "USA", 1)

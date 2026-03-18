@@ -10,15 +10,15 @@ BeforeAll {
     # Dot-source the necessary files for testing
     #################################################################################
     # Dot-source the prefix file to set up the environment and variables
-    . $ProjectRoot/source/prefix.ps1
+    . $ProjectRoot/Source/prefix.ps1
 
     # Set the data directory to the project Data folder for testing
     $script:cacheTelephoneNumberDataDirectory = Join-Path -Path $ProjectRoot -ChildPath "Data"
 
     # Dot-source the CountryCode class file to make it available for testing
-    . $ProjectRoot/source/Classes/CountryCode.ps1
-    . $ProjectRoot/source/Classes/NationalDestinationCode.ps1
-    . $ProjectRoot/source/Classes/SubscriberNumber.ps1
+    . $ProjectRoot/Source/Classes/CountryCode.ps1
+    . $ProjectRoot/Source/Classes/NationalDestinationCode.ps1
+    . $ProjectRoot/Source/Classes/SubscriberNumber.ps1
 }
 
 Context "SubscriberNumber Class" {

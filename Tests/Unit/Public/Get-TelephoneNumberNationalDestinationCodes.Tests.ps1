@@ -5,12 +5,12 @@ BeforeAll {
 
     $env:TELEPHONE_NUMBER_DATA_DIR = Join-Path -Path $ProjectRoot -ChildPath "Data"
 
-    . $ProjectRoot/source/prefix.ps1
-    . $ProjectRoot/source/Classes/CountryCode.ps1
-    . $ProjectRoot/source/Classes/NationalDestinationCode.ps1
-    . $ProjectRoot/source/Classes/SubscriberNumber.ps1
-    . $ProjectRoot/source/Classes/TelephoneNumber.ps1
-    . $ProjectRoot/source/Public/Get-TelephoneNumberNationalDestinationCodes.ps1
+    . $ProjectRoot/Source/prefix.ps1
+    . $ProjectRoot/Source/Classes/CountryCode.ps1
+    . $ProjectRoot/Source/Classes/NationalDestinationCode.ps1
+    . $ProjectRoot/Source/Classes/SubscriberNumber.ps1
+    . $ProjectRoot/Source/Classes/TelephoneNumber.ps1
+    . $ProjectRoot/Source/Public/Get-TelephoneNumberNationalDestinationCodes.ps1
 }
 
 Describe "Public cmdlet - Get-TelephoneNumberNationalDestinationCodes (ByISO/ByCode)" {
