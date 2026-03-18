@@ -25,7 +25,7 @@ jobs:
             # 1. Checkout
             # -------------------------------------------------------------------
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
 
             # -------------------------------------------------------------------
             # 2. Install dependencies
@@ -68,7 +68,7 @@ jobs:
 
             - name: Upload unit test results
               if: always()
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                   name: unit-test-results-ubuntu-pwsh
                   path: TestResults-Unit.xml
@@ -76,7 +76,7 @@ jobs:
 
             - name: Upload code coverage report
               if: always()
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                   name: coverage-ubuntu-pwsh
                   path: Coverage-Unit.xml
@@ -168,7 +168,7 @@ jobs:
 
             - name: Upload unit test results
               if: always()
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                   name: unit-test-results-windows-ps51
                   path: TestResults-Unit.xml
@@ -176,10 +176,10 @@ jobs:
 
             - name: Upload code coverage report
               if: always()
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                   name: coverage-windows-ps51
-                  path: Coverage-Unit.xml
+                  path: ./Tests/Results/Coverage-Unit.xml
                   if-no-files-found: warn
 
             # -------------------------------------------------------------------
@@ -192,8 +192,8 @@ jobs:
 
             - name: Upload integration test results
               if: always()
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                   name: integration-test-results-windows-ps51
-                  path: TestResults-Integration.xml
+                  path: ./Tests/Results/TestResults-Integration.xml
                   if-no-files-found: warn
