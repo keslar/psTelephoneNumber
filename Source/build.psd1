@@ -1,6 +1,6 @@
 ﻿@{
     # Path to the module manifest (.psd1) relative to this file
-    Path                     = "./TelephoneNumber.psd1"
+    Path                     = "./psTelephoneNumber.psd1"
 
     # Where to output the built module
     OutputDirectory          = "./build"
