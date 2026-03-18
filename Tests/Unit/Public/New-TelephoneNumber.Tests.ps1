@@ -1,3 +1,5 @@
+if ((Get-Module Pester).Version.Major -lt 5) { Write-Warning "This test file requires Pester v5 or later. Skipping."; return }
+
 # We dot-source the file directly for Unit Testing 
 # or use Import-Module if testing the module as a whole.
 BeforeAll {
