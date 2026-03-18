@@ -1,6 +1,5 @@
 # PowerShell Module Build Artifacts
-output/
-build/
+Output/
 release/
 dist/
 
