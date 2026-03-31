@@ -4,6 +4,52 @@
     Represents a national destination code within a telecommunications system.
 
 .DESCRIPTION
+    The NationalDestinationCode class encapsulates the national destination
+    code portion of a telephone number, sometimes referred to as an area code
+    or destination code. It stores metadata about the code and provides methods
+    to match numbers, retrieve destination-code data, and validate codes for a
+    given country.
+
+.PROPERTIES
+    Code: The national destination code (NDC) or area code.
+    ISO3: The ISO 3166-1 alpha-3 code for the associated country.
+    Description: A description of the NDC, such as the city or service area.
+    Region: The region or locality associated with the NDC, when available.
+    IsGeographic: Indicates whether the NDC is geographic.
+    NumberType: The type of number associated with the NDC.
+
+.METHODS
+    MatchesNumber(phoneNumber): Checks whether a phone number starts with this
+        country code and national destination code.
+    ToString(): Returns a display-friendly representation of the NDC.
+    ClearCache(): Clears the cached national destination code data.
+    SetDataDirectory(directory): Sets the data directory used to load NDC data.
+    GetAllNationalDestinationCodes(): Returns all known national destination
+        codes from the data source.
+    GetAllNationalDestinationCodeForCountry(CountryCode): Returns all national
+        destination codes for a given country.
+    FindByCode(ISO, Code): Finds a national destination code by ISO3 code and
+        destination code.
+    FindByCode(numericCode, Code): Finds a national destination code by
+        numeric country code and destination code.
+    isValidCode(ISO3, Code): Returns true when the specified code exists for
+        the given country.
+
+.EXAMPLE
+    $ndc = [NationalDestinationCode]::new('USA', '412', 'Pittsburgh')
+    $ndc.ToString()
+
+    Creates a national destination code and returns its display string.
+
+.EXAMPLE
+    [NationalDestinationCode]::FindByCode('USA', '412')
+
+    Returns the matching national destination code for the given country and
+    code, if one exists.
+
+.NOTES
+    National destination code data is loaded from NationalDestinationCodes.csv
+    in the configured data directory and cached for reuse.
 
 #>
 

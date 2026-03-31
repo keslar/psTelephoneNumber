@@ -22,7 +22,7 @@ function Determine-VersionBumpFromCommits {
     $major = $false
     $minor = $false
     foreach ($c in $commits) {
-        if (($c -match "BREAKING CHANGE") -or ($c -match "feat!?:")) { 
+        if (($c -match "BREAKING CHANGE") -or ($c -match "^feat.*!:") -or ($c -match "^[a-z]+!:")) {
             $major = $true 
         } elseif ($c -match "^feat") { 
             $minor = $true 

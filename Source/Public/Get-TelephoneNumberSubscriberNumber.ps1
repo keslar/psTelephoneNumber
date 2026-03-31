@@ -1,3 +1,23 @@
+<#
+.SYNOPSIS
+    Returns the subscriber number for a telephone number.
+
+.DESCRIPTION
+    Parses the supplied telephone number and returns the matching
+    SubscriberNumber object.
+
+.PARAMETER TelephoneNumber
+    The telephone number to inspect.
+
+.OUTPUTS
+    SubscriberNumber
+
+.EXAMPLE
+    Get-TelephoneNumberSubscriberNumber -TelephoneNumber '+14121234567'
+
+    Returns the subscriber number object associated with the supplied
+    telephone number.
+#>
 function Get-TelephoneNumberSubscriberNumber {
     [CmdletBinding()]
     param (

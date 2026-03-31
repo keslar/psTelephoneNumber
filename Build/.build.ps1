@@ -163,7 +163,7 @@ task TestUnit Analyze, {
     $sourcePath = $Script:SourcePath
     $threshold = $Script:CoverageThreshold
 
-    pwsh -NoProfile -NonInteractive -Command {
+    pwsh -WorkingDirectory $Script:ProjectRoot -NoProfile -NonInteractive -Command {
         param($TestsPath, $SourcePath, $CoverageThreshold)
 
         Import-Module Pester -MinimumVersion 5.0 -ErrorAction Stop
@@ -374,7 +374,7 @@ task TestIntegration Sign, {
     $moduleName = $Script:ModuleName
     $psd1Path = Join-Path $Script:BuiltModuleBase "$($Script:ModuleName).psd1"
     
-    pwsh -NoProfile -NonInteractive -Command {
+    pwsh -WorkingDirectory $Script:ProjectRoot -NoProfile -NonInteractive -Command {
         param($TestsPath, $ModuleName, $Psd1Path)
 
         Import-Module Pester -MinimumVersion 5.0 -ErrorAction Stop

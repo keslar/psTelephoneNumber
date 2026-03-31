@@ -4,8 +4,44 @@ $script:cacheTelephoneNumberSubscriberNumberFormats = $null
 <#
 .SYNOPSIS
     Represents a subscriber number within a telecommunications system.
+
 .DESCRIPTION
-    The SubscriberNumber class encapsulates the subscriber number portion of a telephone number, which is the part that follows the country code and national destination code. It provides properties to store the subscriber number value and methods to validate it based on the formats defined for different country codes.
+    The SubscriberNumber class encapsulates the subscriber number portion of a
+    telephone number, which is the part that follows the country code and
+    national destination code. It stores the subscriber number value and
+    provides methods to validate it against the supported formats for a given
+    country.
+
+.PROPERTIES
+    Value: The subscriber number portion of the telephone number.
+
+.METHODS
+    ToString(): Returns the subscriber number as a string.
+    IsValid(iso): Validates the subscriber number against the configured rules
+        for the specified ISO country code.
+    ClearCache(): Clears the cached subscriber number format data.
+    SetDataDirectory(directory): Sets the data directory used to load
+        subscriber number format data.
+    GetSubscriberNumberFormats(): Returns all subscriber number formats from
+        the configured data source.
+    GetSubscriberNumberFormatForCountryCode(countryCode): Returns the
+        subscriber number format for a specific country.
+
+.EXAMPLE
+    $subscriber = [SubscriberNumber]::new('5551234')
+    $subscriber.ToString()
+
+    Creates a subscriber number object and returns its string value.
+
+.EXAMPLE
+    [SubscriberNumber]::new('5551234', 'USA')
+
+    Creates a subscriber number and validates it against the format rules for
+    the specified country.
+
+.NOTES
+    Subscriber number formats are loaded from SubscriberNumberFormats.csv in
+    the configured data directory and cached for reuse.
 #>
 class SubscriberNumber {
     [string]$Value

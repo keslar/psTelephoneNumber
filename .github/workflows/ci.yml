@@ -171,7 +171,7 @@ jobs:
               uses: actions/upload-artifact@v5
               with:
                   name: unit-test-results-windows-ps51
-                  path: TestResults-Unit.xml
+                  path: Tests/Results/TestResults-Unit.xml
                   if-no-files-found: warn
 
             - name: Upload code coverage report
@@ -179,7 +179,7 @@ jobs:
               uses: actions/upload-artifact@v5
               with:
                   name: coverage-windows-ps51
-                  path: ./Tests/Results/Coverage-Unit.xml
+                  path: Tests/Results/Coverage-Unit.xml
                   if-no-files-found: warn
 
             # -------------------------------------------------------------------
@@ -195,5 +195,5 @@ jobs:
               uses: actions/upload-artifact@v5
               with:
                   name: integration-test-results-windows-ps51
-                  path: ./Tests/Results/TestResults-Integration.xml
+                  path: Tests/Results/TestResults-Integration.xml
                   if-no-files-found: warn

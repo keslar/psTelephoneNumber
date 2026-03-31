@@ -120,7 +120,7 @@ if (-not (Test-Path $buildFile)) {
 $tasksToRun = [System.Collections.Generic.List[string]]::new()
 
 if ($Task -and $Task.Count -gt 0) {
-    # Explicit task list — pass through directly, ignore all switches
+    # Explicit task list - pass through directly, ignore all switches
     $Task | ForEach-Object { $tasksToRun.Add($_) }
 
 } elseif ($Release) {
@@ -162,7 +162,7 @@ if ($PushTag) { $ibParams['PushTag'] = $true }
 # Execute
 ###############################################################################
 Write-Host ''
-Write-Host "Tasks : $($tasksToRun -join ' → ')" -ForegroundColor Cyan
+Write-Host "Tasks : $($tasksToRun -join ' -> ')" -ForegroundColor Cyan
 if ($SemVer) { Write-Host "SemVer      : $SemVer"      -ForegroundColor DarkCyan }
 if ($VersionBump) { Write-Host "VersionBump : $VersionBump" -ForegroundColor DarkCyan }
 if ($PushTag) { Write-Host "PushTag     : true"         -ForegroundColor DarkCyan }

@@ -4,9 +4,47 @@
 
 <#
 .SYNOPSIS
-    Represents a subscriber number within a telecommunications system.
+    Represents a full telephone number within a telecommunications system.
+
 .DESCRIPTION
-    The SubscriberNumber class encapsulates the subscriber number portion of a telephone number, which is the part that follows the country code and national destination code. It provides properties to store the subscriber number value and methods to validate it based on the formats defined for different country codes.
+    The TelephoneNumber class encapsulates a complete telephone number value in
+    international format. It provides methods to parse and normalize a phone
+    number string, determine the associated country code and national
+    destination code, and extract the subscriber number portion.
+
+.PROPERTIES
+    Value: The normalized telephone number value.
+
+.METHODS
+    ToString(): Returns the normalized telephone number as a string.
+    GetCountryCode(): Returns the CountryCode object associated with the phone
+        number.
+    GetNationalDestinationCode(): Returns the NationalDestinationCode object
+        associated with the phone number.
+    GetSubscriberNumber(): Returns the SubscriberNumber object associated with
+        the phone number.
+    Parse(number): Cleans, validates, and normalizes a phone number string.
+
+.EXAMPLE
+    $number = [TelephoneNumber]::new('+14125551234')
+    $number.ToString()
+
+    Creates a telephone number object and returns its normalized value.
+
+.EXAMPLE
+    $number = [TelephoneNumber]::new('+14125551234')
+    $number.GetCountryCode()
+
+    Returns the country code object that matches the telephone number.
+
+.EXAMPLE
+    [TelephoneNumber]::Parse('(412) 555-1234')
+
+    Cleans and normalizes the supplied phone number into international format.
+
+.NOTES
+    Telephone number parsing depends on the configured country code, national
+    destination code, and subscriber number data sources.
 #>
 
 class TelephoneNumber {
