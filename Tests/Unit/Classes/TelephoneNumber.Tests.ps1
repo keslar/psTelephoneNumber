@@ -15,7 +15,12 @@ BeforeAll {
     # Dot-source the prefix file to set up the environment and variables
     . $ProjectRoot/Source/prefix.ps1
 
-    # Dot-source the CountryCode class file to make it available for testing
+    # Dot-source ENUMs before classes (TelephoneNumber.ps1 references enum types)
+    . $ProjectRoot/Source/ENUMs/PhoneNumberFormat.ps1
+    . $ProjectRoot/Source/ENUMs/ValidationStatus.ps1
+    . $ProjectRoot/Source/ENUMs/PhoneNumberType.ps1
+
+    # Dot-source class files for testing
     . $ProjectRoot/Source/Classes/CountryCode.ps1
     . $ProjectRoot/Source/Classes/NationalDestinationCode.ps1
     . $ProjectRoot/Source/Classes/SubscriberNumber.ps1
