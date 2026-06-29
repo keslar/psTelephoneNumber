@@ -46,43 +46,47 @@ class SubscriberNumber {
     SubscriberNumber() {
         $this.Value = $null
     }
-    SubscriberNumber( [string]$number ) {
-        $this.Value = $number
+    SubscriberNumber( [string]$Number ) {
+        $this.Value = $Number
     }
-    SubscriberNumber( [string]$number, [string]$ISO3 ) {
-        $this.Value = $number
+    SubscriberNumber( [string]$Number, [string]$ISO3 ) {
+        $this.Value = $Number
         if (-not $this.IsValid($ISO3)) {
             throw [System.ArgumentException]::new("Invalid subscriber number format for country code: $ISO3")
         }
     }
     ###############################################
     ################ Methods ######################
+
     # Override ToString for better display
     [string] ToString() {
         return $this.Value
     }
-    # isValid checks if the subscriber number is valid based on the formats for the country code
-    [bool] IsValid ( [string]$iso ) {
+
+    # IsValid checks if the subscriber number is valid based on the formats for the country code
+    [bool] IsValid ( [string]$ISO ) {
         try {
-            $format = [SubscriberNumber]::GetSubscriberNumberFormatForCountryCode($iso)
-            $numberToValidate = $this.Value -replace "\D", "" # Remove non-digit characters for validation
-            # Get the min and max length for NDC
-            $ndcs = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry( ([CountryCode]::FindByISO($iso))[0] )
-            $maxNDCLength = 1
-            $minNDCLength = 100
-            foreach ($ndc in $ndcs) {
-                if ($ndc.Code.Length -gt $maxNDCLength) {
-                    $maxNDCLength = $ndc.Code.Length
+            $Format = [SubscriberNumber]::GetSubscriberNumberFormatForCountryCode($ISO)
+            $NumberToValidate = $this.Value -replace '\D', ''
+            $CountryCodeItem = [CountryCode]::FindByISO($ISO)
+            if ($CountryCodeItem.Count -eq 0) {
+                throw [System.ArgumentException]::new("Country code with ISO '$ISO' not found.")
+            }
+            $NationalDestinationCodes = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCodeItem[0])
+            $MaxNdcLength = 1
+            $MinNdcLength = 100
+            foreach ($Ndc in $NationalDestinationCodes) {
+                if ($Ndc.Code.Length -gt $MaxNdcLength) {
+                    $MaxNdcLength = $Ndc.Code.Length
                 }
-                if ($ndc.Code.Length -lt $minNDCLength) {
-                    $minNDCLength = $ndc.Code.Length
+                if ($Ndc.Code.Length -lt $MinNdcLength) {
+                    $MinNdcLength = $Ndc.Code.Length
                 }
             }
-            $minLength = [int]$format.Min - $maxNDCLength
-            $maxLength = [int]$format.Max - $minNDCLength
-            # Check of the length of the subscriber number is within the valid range for the country code
-            $lengthCheck = ($numberToValidate.Length -ge $minLength) -and ($numberToValidate.Length -le $maxLength)
-            return $lengthCheck
+            $MinLength = [int]$Format.Min - $MaxNdcLength
+            $MaxLength = [int]$Format.Max - $MinNdcLength
+            $LengthCheck = ($NumberToValidate.Length -ge $MinLength) -and ($NumberToValidate.Length -le $MaxLength)
+            return $LengthCheck
         } catch {
             throw $_
         }
@@ -91,6 +95,7 @@ class SubscriberNumber {
 
     ###############################################
     ############# Static Methods ##################
+
     static [void] ClearCache() {
         $script:cacheTelephoneNumberSubscriberNumberFormats = $null
     }
@@ -98,35 +103,35 @@ class SubscriberNumber {
     # NOTE: Only clears the SubscriberNumber cache. This is intentional — each class
     # manages its own data directory independently so tests can validate cache
     # isolation per data type without cross-contamination.
-    static [void] SetDataDirectory([string]$directory) {
-        if (-not (Test-Path -Path $directory -PathType Container)) {
-            throw [System.IO.DirectoryNotFoundException]::new("The specified directory does not exist: $directory")
+    static [void] SetDataDirectory([string]$Directory) {
+        if (-not (Test-Path -Path $Directory -PathType Container)) {
+            throw [System.IO.DirectoryNotFoundException]::new("The specified directory does not exist: $Directory")
         }
-        $script:cacheTelephoneNumberDataDirectory = $directory
+        $script:cacheTelephoneNumberDataDirectory = $Directory
         [SubscriberNumber]::ClearCache()
     }
 
     # Get the formats for subscriber numbers from the data file
     static [object[]] GetSubscriberNumberFormats () {
         if ($null -eq $script:cacheTelephoneNumberSubscriberNumberFormats) {
-            $dataFile = Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath "SubscriberNumberFormats.csv"
-            if (Test-Path -Path $dataFile) {
-                $script:cacheTelephoneNumberSubscriberNumberFormats = Import-Csv -Path $dataFile
+            $DataFile = Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath 'SubscriberNumberFormats.csv'
+            if (Test-Path -Path $DataFile) {
+                $script:cacheTelephoneNumberSubscriberNumberFormats = Import-Csv -Path $DataFile
             } else {
-                throw [System.IO.FileNotFoundException]::new("Subscriber number formats data file not found at path: $dataFile")
+                throw [System.IO.FileNotFoundException]::new("Subscriber number formats data file not found at path: $DataFile")
             }
         }
         return $script:cacheTelephoneNumberSubscriberNumberFormats
     }
+
     # Get the format for a specific country code
-    static [object] GetSubscriberNumberFormatForCountryCode ( [string]$countryCode ) {
-        $formats = [SubscriberNumber]::GetSubscriberNumberFormats()
-        $format = $formats | Where-Object { $_.ISO3 -eq $countryCode }
-        if ($null -ne $format) {
-            return $format
+    static [object] GetSubscriberNumberFormatForCountryCode ( [string]$CountryCode ) {
+        $Formats = [SubscriberNumber]::GetSubscriberNumberFormats()
+        $Format = $Formats | Where-Object { $_.ISO3 -eq $CountryCode }
+        if ($null -ne $Format) {
+            return $Format
         } else {
-            throw [System.ArgumentException]::new("No subscriber number format found for country code: $countryCode")
+            throw [System.ArgumentException]::new("No subscriber number format found for country code: $CountryCode")
         }
     }
 }
-

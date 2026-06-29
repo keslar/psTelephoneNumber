@@ -1,6 +1,6 @@
 if ((Get-Module Pester).Version.Major -lt 5) { Write-Warning "This test file requires Pester v5 or later. Skipping."; return }
 
-# We dot-source the file directly for Unit Testing 
+# We dot-source the file directly for Unit Testing
 # or use Import-Module if testing the module as a whole.
 BeforeAll {
     # Find the project root by going up three levels from the current script directory
@@ -24,7 +24,7 @@ BeforeAll {
     . $ProjectRoot/Source/Public/New-TelephoneNumber.ps1
 }
 
-Describe "Public cmdlet - New-gTelephoneNumber" {
+Describe "Public cmdlet - New-TelephoneNumber" {
     Context "Test cmdlet behavior" {
         It "1.1 Not throw an exception for a valid phone number" {
             { New-TelephoneNumber -Number "+1 (212) 123-4567" } | Should -Not -Throw

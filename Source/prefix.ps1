@@ -1,16 +1,17 @@
-# requires -version <powershell version>
-# requires -Modules <ModuleList>
-# -- remove space before requires statement and replace version and ModuleList
+#Requires -Version 5.1
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
 <#
     .SYNOPSIS
-
-    A powershell module to validate and manipulate telephone numbers
+        A PowerShell module to validate and manipulate telephone numbers
 
     .DESCRIPTION
 
     .NOTES
         Version:    {{MODULE_VERSION}}
-        Author(s):  [. Keslar <crk4@pitt.edu>
+        Author(s):  Chris Keslar <crk4@pitt.edu>
         Date:       {{BUILD_DATE}}
 
     .LINK
@@ -23,7 +24,7 @@ $script:cacheTelephoneNumberDataDirectory = Join-Path -Path $PSScriptRoot -Child
 $script:cacheTelephoneNumberCountryCodes = $null
 $script:cacheTelephoneNumberNationalDestinationCodes = $null
 $script:cacheTelephoneNumberSubscriberNumberFormats = $null
-    
+
 ###############################################################################
 ## Update the data directory if the environment variable is set
 if ($env:TELEPHONE_NUMBER_DATA_DIR) {

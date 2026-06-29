@@ -27,14 +27,14 @@ function Test-TelephoneNumber {
     [CmdletBinding()]
     [OutputType([ValidationStatus])]
     param(
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string]$Number
     )
 
     process {
         try {
-            $phone = [TelephoneNumber]::new($Number)
-            return $phone.Validate()
+            $Phone = [TelephoneNumber]::new($Number)
+            return $Phone.Validate()
         } catch {
             return [ValidationStatus]::InvalidFormat
         }

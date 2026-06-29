@@ -28,10 +28,11 @@
 #>
 function Get-TelephoneNumberNationalDestinationCodes {
     [CmdletBinding()]
+    [OutputType([NationalDestinationCode])]
     param (
-        [Parameter(ParameterSetName = "ByISO", Mandatory = $true)]
+        [Parameter(ParameterSetName = 'ByISO', Mandatory)]
         [string]$ISO,
-        [Parameter(ParameterSetName = "ByCode", Mandatory = $true)]
+        [Parameter(ParameterSetName = 'ByCode', Mandatory)]
         [string]$Code
     )
     if ($ISO) {
@@ -40,10 +41,12 @@ function Get-TelephoneNumberNationalDestinationCodes {
         $CountryCodes = [CountryCode]::FindByCode($Code)
     }
 
-    $NationalDestinationCodes = @()
-    foreach ($CountryCode in $CountryCodes) {
-        $NDCs = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCode)
-        $NationalDestinationCodes += $NDCs
+    $NationalDestinationCodes = [System.Collections.Generic.List[NationalDestinationCode]]::new()
+    foreach ($CodeEntry in $CountryCodes) {
+        $NdcList = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CodeEntry)
+        foreach ($NdcEntry in $NdcList) {
+            $NationalDestinationCodes.Add($NdcEntry)
+        }
     }
     return $NationalDestinationCodes
 }

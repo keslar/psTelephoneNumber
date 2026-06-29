@@ -20,13 +20,14 @@
 #>
 function Get-TelephoneNumberNationalDestinationCode {
     [CmdletBinding()]
+    [OutputType([NationalDestinationCode])]
     param (
-        [Parameter(ParameterSetName = "ByTelephoneNumber", Mandatory = $true)]
+        [Parameter(ParameterSetName = 'ByTelephoneNumber', Mandatory)]
         [string]$TelephoneNumber
     )
     $PhoneNumber = [TelephoneNumber]::new($TelephoneNumber)
     if (-not $PhoneNumber.Value) {
-        throw "Invalid telephone number format. Please provide a valid number."
+        throw 'Invalid telephone number format. Please provide a valid number.'
     }
     return $PhoneNumber.GetNationalDestinationCode()
 }

@@ -6,7 +6,7 @@ $script:cacheTelephoneNumberCountryCodes = $null
 
 .DESCRIPTION
     The CountryCode class encapsulates information about a country's international dialing code, ISO codes, and
-numeric code. It provides methods to format phone numbers, check for matches, and retrieve country code information.
+    numeric code. It provides methods to format phone numbers, check for matches, and retrieve country code information.
 
 .PROPERTIES
     CountryName: The name of the country.
@@ -42,7 +42,6 @@ numeric code. It provides methods to format phone numbers, check for matches, an
 
 .NOTES
 
-
 #>
 class CountryCode {
     [string]$CountryName        # Name of the country
@@ -53,6 +52,7 @@ class CountryCode {
 
     ##############################################
     ################ Constructors ################
+
     # Constructor with no parameters
     CountryCode() {
         $this.CountryName = $null
@@ -61,64 +61,73 @@ class CountryCode {
         $this.ISO3 = $null
         $this.NumericCode = -1
     }
+
     # Constructor with country name and code
-    CountryCode([string]$countryName, [string]$code) {
-        if ([string]::IsNullOrWhiteSpace($countryName)) {
-            throw [System.ArgumentException]::new("CountryName cannot be null or empty.")
+    CountryCode([string]$CountryName, [string]$Code) {
+        if ([string]::IsNullOrWhiteSpace($CountryName)) {
+            throw [System.ArgumentException]::new('CountryName cannot be null or empty.')
         }
-        if ([string]::IsNullOrWhiteSpace($code)) {
-            throw [System.ArgumentException]::new("Code cannot be null or empty.")
+        if ([string]::IsNullOrWhiteSpace($Code)) {
+            throw [System.ArgumentException]::new('Code cannot be null or empty.')
         }
-        $this.CountryName = $countryName
-        $this.Code = $code
+        $this.CountryName = $CountryName
+        $this.Code = $Code
     }
+
     # Constructor with all properties
-    CountryCode([string]$countryName, [string]$code, [string]$iso2, [string]$iso3, [int]$numericCode) {
-        if ([string]::IsNullOrWhiteSpace($countryName)) {
-            throw [System.ArgumentException]::new("CountryName cannot be null or empty.")
+    CountryCode([string]$CountryName, [string]$Code, [string]$Iso2, [string]$Iso3, [int]$NumericCode) {
+        if ([string]::IsNullOrWhiteSpace($CountryName)) {
+            throw [System.ArgumentException]::new('CountryName cannot be null or empty.')
         }
-        if ([string]::IsNullOrWhiteSpace($code)) {
-            throw [System.ArgumentException]::new("Code cannot be null or empty.")
+        if ([string]::IsNullOrWhiteSpace($Code)) {
+            throw [System.ArgumentException]::new('Code cannot be null or empty.')
         }
-        if ([string]::IsNullOrWhiteSpace($iso2)) {
-            throw [System.ArgumentException]::new("ISO2 cannot be null or empty.")
+        if ([string]::IsNullOrWhiteSpace($Iso2)) {
+            throw [System.ArgumentException]::new('ISO2 cannot be null or empty.')
         }
-        if ([string]::IsNullOrWhiteSpace($iso3)) {
-            throw [System.ArgumentException]::new("ISO3 cannot be null or empty.")
+        if ([string]::IsNullOrWhiteSpace($Iso3)) {
+            throw [System.ArgumentException]::new('ISO3 cannot be null or empty.')
         }
-        if ($numericCode -le 0) {
-            throw [System.ArgumentException]::new("NumericCode must be a positive integer.")
+        if ($NumericCode -le 0) {
+            throw [System.ArgumentException]::new('NumericCode must be a positive integer.')
         }
 
-        $this.CountryName = $countryName
-        $this.Code = $code
-        $this.ISO2 = $iso2
-        $this.ISO3 = $iso3
-        $this.NumericCode = $numericCode
+        $this.CountryName = $CountryName
+        $this.Code = $Code
+        $this.ISO2 = $Iso2
+        $this.ISO3 = $Iso3
+        $this.NumericCode = $NumericCode
     }
+
     ###############################################
     ################ Methods ######################
+
     # Get the code without the plus sign
     [string] GetNumericCodeOnly() {
         return $this.Code.TrimStart('+')
     }
+
     # Format a phone number with this country code
-    [string] FormatNumber([string]$nationalNumber) {
-        $cleanNumber = $nationalNumber -replace '[^0-9]', ''
-        $cleanCode = $this.Code -replace '[^0-9+]', ''
-        return "$cleanCode$cleanNumber"
+    [string] FormatNumber([string]$NationalNumber) {
+        $CleanNumber = $NationalNumber -replace '[^0-9]', ''
+        $CleanCode = $this.Code -replace '[^0-9+]', ''
+        return "$CleanCode$CleanNumber"
     }
-    # Check if a phone number starts with this country code, ignoring subcodes,must start with+ sign and country code, but can have additional digits after the country code
-    [bool] MatchesNumber([string]$phoneNumber) {
-        $cleanNumber = $phoneNumber -replace '[^0-9+]', ''
-        return $cleanNumber.StartsWith(($this.Code -replace '[^0-9+]', ''))
+
+    # Check if a phone number starts with this country code, ignoring subcodes, must start with+ sign and country code, but can have additional digits after the country code
+    [bool] MatchesNumber([string]$PhoneNumber) {
+        $CleanNumber = $PhoneNumber -replace '[^0-9+]', ''
+        return $CleanNumber.StartsWith(($this.Code -replace '[^0-9+]', ''))
     }
+
     # Override ToString for better display
     [string] ToString() {
         return "$($this.CountryName): $($this.Code)"
     }
+
     #################################################
     ################# Static Methods ################
+
     static [void] ClearCache() {
         $script:cacheTelephoneNumberCountryCodes = $null
     }
@@ -126,86 +135,89 @@ class CountryCode {
     # NOTE: Only clears the CountryCode cache. This is intentional — each class
     # manages its own data directory independently so tests can validate cache
     # isolation per data type without cross-contamination.
-    static [void] SetDataDirectory([string]$directory) {
-        if (-not (Test-Path -Path $directory -PathType Container)) {
-            throw [System.IO.DirectoryNotFoundException]::new("The specified directory does not exist: $directory")
+    static [void] SetDataDirectory([string]$Directory) {
+        if (-not (Test-Path -Path $Directory -PathType Container)) {
+            throw [System.IO.DirectoryNotFoundException]::new("The specified directory does not exist: $Directory")
         }
-        $script:cacheTelephoneNumberDataDirectory = $directory
+        $script:cacheTelephoneNumberDataDirectory = $Directory
         [CountryCode]::ClearCache()
     }
 
-    # Get a list of all country codes  
-    static [object[]] GetAllCountryCodes() {  
+    # Get a list of all country codes
+    static [object[]] GetAllCountryCodes() {
         if ($null -ne $script:cacheTelephoneNumberCountryCodes) {
             return $script:cacheTelephoneNumberCountryCodes
         }
         $script:cacheTelephoneNumberCountryCodes = @()
-        # Load data into the list
         try {
-            $CountryCodesData = Import-Csv -Path (Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath CountryCodes.csv)
+            $CountryCodesData = Import-Csv -Path (Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath 'CountryCodes.csv')
         } catch {
-            throw [System.IO.FileNotFoundException]::new("CountryCodes.csv not found in data directory: $($script:cacheTelephoneNumberDataDirectory)")
+            throw [System.IO.FileNotFoundException]::new('CountryCodes.csv not found in data directory.')
         }
-        
+
         if ($null -eq $CountryCodesData) {
-            throw [System.Exception]::new("Failed to load country codes data from CSV.")
+            throw [System.Exception]::new('Failed to load country codes data from CSV.')
         }
-        
-        foreach ( $Country in $CountryCodesData ) {
-            $script:cacheTelephoneNumberCountryCodes += [CountryCode]::new($Country.CountryName, $Country.Code, $Country.ISO2, $Country.ISO3, [int]$Country.NumericCode)
+
+        foreach ($Row in $CountryCodesData) {
+            $script:cacheTelephoneNumberCountryCodes += [CountryCode]::new($Row.CountryName, $Row.Code, $Row.ISO2, $Row.ISO3, [int]$Row.NumericCode)
         }
         return $script:cacheTelephoneNumberCountryCodes
     }
+
     # Find a country code by its code (e.g., +1), returns a list of matching CountryCode objects
-    # This accounts for cases where multiple countries share the same code (e.g., +1 for US, Canada, etc.)
-    static [object[]] FindByCode([string]$code) {
-        $cleanCode = $code.TrimStart('+')
-        $codes = [CountryCode]::GetAllCountryCodes()
-        $Countries = @()
-        foreach ($countryCode in $codes) {
-            if ($countryCode.Code.TrimStart('+') -eq $cleanCode) {
-                $Countries += $countryCode
+    static [object[]] FindByCode([string]$Code) {
+        $CleanCode = $Code.TrimStart('+')
+        $Codes = [CountryCode]::GetAllCountryCodes()
+        $Results = [System.Collections.Generic.List[CountryCode]]::new()
+        foreach ($CodeEntry in $Codes) {
+            if ($CodeEntry.Code.TrimStart('+') -eq $CleanCode) {
+                $Results.Add($CodeEntry)
             }
         }
-        return $Countries
+        if ($Results.Count -eq 0) { return @() }
+        return $Results.ToArray()
     }
-    # Find a country code by its code (e.g., +1), returns a list of matching CountryCode objects
-    # This accounts for cases where multiple countries share the same code (e.g., +1 for US, Canada, etc.)
-    static [object[]] FindByCode([int]$numericCode) {
-        $codes = [CountryCode]::GetAllCountryCodes()
-        $Countries = @()
-        foreach ($countryCode in $codes) {
-            if ($countryCode.NumericCode -eq $numericCode) {
-                $Countries += $countryCode
+
+    # Find a country code by its numeric code (e.g., 1), returns a list of matching CountryCode objects
+    static [object[]] FindByCode([int]$NumericCode) {
+        $Codes = [CountryCode]::GetAllCountryCodes()
+        $Results = [System.Collections.Generic.List[CountryCode]]::new()
+        foreach ($CodeEntry in $Codes) {
+            if ($CodeEntry.NumericCode -eq $NumericCode) {
+                $Results.Add($CodeEntry)
             }
         }
-        return $Countries
+        if ($Results.Count -eq 0) { return @() }
+        return $Results.ToArray()
     }
-    # Find a country code by its ISO code (either ISO2 or ISO3), returns the a list of matching CountryCode object or null if not found
-    # This accounts for cases where multiple countries share the same code (e.g., +1 for US, Canada, etc.)
-    static [object[]] FindByISO([string]$iso) {
-        if ($iso.Length -ne 2 -and $iso.Length -ne 3) {
-            throw [System.ArgumentException]::new("ISO code must be either 2 or 3 characters long.")
+
+    # Find a country code by its ISO code (either ISO2 or ISO3), returns a list of matching CountryCode objects
+    static [object[]] FindByISO([string]$ISO) {
+        if ($ISO.Length -ne 2 -and $ISO.Length -ne 3) {
+            throw [System.ArgumentException]::new('ISO code must be either 2 or 3 characters long.')
         }
-        $codes = [CountryCode]::GetAllCountryCodes()
-        $Countries = @()
-        foreach ($countryCode in $codes) {
-            if ($countryCode.ISO2 -eq $iso -or $countryCode.ISO3 -eq $iso) {
-                $Countries += $countryCode
+        $Codes = [CountryCode]::GetAllCountryCodes()
+        $Results = [System.Collections.Generic.List[CountryCode]]::new()
+        foreach ($CodeEntry in $Codes) {
+            if ($CodeEntry.ISO2 -eq $ISO -or $CodeEntry.ISO3 -eq $ISO) {
+                $Results.Add($CodeEntry)
             }
         }
-        return $Countries
+        if ($Results.Count -eq 0) { return @() }
+        return $Results.ToArray()
     }
+
     # Find a country code by its name, returns a list of matching CountryCode objects
-    # This accounts for cases where multiple countries share similar names
-    static [object[]] FindByName([string]$name) {
-        $codes = [CountryCode]::GetAllCountryCodes()
-        $Countries = @()
-        foreach ($countryCode in $codes) {
-            if ($countryCode.CountryName -like "*$name*") {
-                $Countries += $countryCode
+    static [object[]] FindByName([string]$Name) {
+        $Codes = [CountryCode]::GetAllCountryCodes()
+        $Results = [System.Collections.Generic.List[CountryCode]]::new()
+        foreach ($CodeEntry in $Codes) {
+            if ($CodeEntry.CountryName -like "*$Name*") {
+                $Results.Add($CodeEntry)
             }
         }
-        return $Countries   
+        if ($Results.Count -eq 0) { return @() }
+        return $Results.ToArray()
     }
 }

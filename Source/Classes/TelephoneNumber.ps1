@@ -44,47 +44,49 @@
     Telephone number parsing depends on the configured country code, national
     destination code, and subscriber number data sources.
 #>
-
 class TelephoneNumber {
     [AllowNull()]
     [string]$Value
     TelephoneNumber() {
         $this.Value = $null
     }
-    TelephoneNumber([string]$value) {
-        if ([string]::IsNullOrWhiteSpace($value)) {
-            throw [System.ArgumentException]::new("Value cannot be null or empty.")
+    TelephoneNumber([string]$Value) {
+        if ([string]::IsNullOrWhiteSpace($Value)) {
+            throw [System.ArgumentException]::new('Value cannot be null or empty.')
         }
-        $this.Value = [TelephoneNumber]::Parse($value)
+        $this.Value = [TelephoneNumber]::Parse($Value)
     }
     ###############################################
     ################ Methods ######################
+
     # Override ToString for better display
     [string] ToString() {
         return $this.Value
     }
+
     # Format returns the telephone number in the specified format
-    [string] Format([PhoneNumberFormat]$format) {
-        if ($format -eq [PhoneNumberFormat]::E164 -or $format -eq [PhoneNumberFormat]::Dialable) {
+    [string] Format([PhoneNumberFormat]$Format) {
+        if ($Format -eq [PhoneNumberFormat]::E164 -or $Format -eq [PhoneNumberFormat]::Dialable) {
             return $this.Value
         }
-        if ($format -eq [PhoneNumberFormat]::National) {
-            $cc = $this.GetCountryCode()
-            $ndc = $this.GetNationalDestinationCode()
-            $subscriber = $this.GetSubscriberNumber()
-            if ($cc.ISO2 -eq 'US' -and $subscriber.Value.Length -ge 7) {
-                return "({0}) {1}-{2}" -f $ndc.Code, $subscriber.Value.Substring(0, 3), $subscriber.Value.Substring(3)
+        if ($Format -eq [PhoneNumberFormat]::National) {
+            $CountryCodeItem = $this.GetCountryCode()
+            $Ndc = $this.GetNationalDestinationCode()
+            $Subscriber = $this.GetSubscriberNumber()
+            if ($CountryCodeItem.ISO2 -eq 'US' -and $Subscriber.Value.Length -ge 7) {
+                return "({0}) {1}-{2}" -f $Ndc.Code, $Subscriber.Value.Substring(0, 3), $Subscriber.Value.Substring(3)
             }
             return $this.Value
         }
-        if ($format -eq [PhoneNumberFormat]::RFC3966) {
-            $cc = $this.GetCountryCode()
-            $ndc = $this.GetNationalDestinationCode()
-            $subscriber = $this.GetSubscriberNumber()
-            return "tel:{0}-{1}-{2}" -f $cc.Code, $ndc.Code, $subscriber.Value
+        if ($Format -eq [PhoneNumberFormat]::RFC3966) {
+            $CountryCodeItem = $this.GetCountryCode()
+            $Ndc = $this.GetNationalDestinationCode()
+            $Subscriber = $this.GetSubscriberNumber()
+            return "tel:{0}-{1}-{2}" -f $CountryCodeItem.Code, $Ndc.Code, $Subscriber.Value
         }
         return $this.Value
     }
+
     # Validate returns a ValidationStatus indicating the validation result
     [ValidationStatus] Validate() {
         try {
@@ -93,142 +95,138 @@ class TelephoneNumber {
             $null = $this.GetSubscriberNumber()
             return [ValidationStatus]::Valid
         } catch {
-            if ($_ -match "Invalid phone number format") {
+            if ($_ -match 'Invalid phone number format') {
                 return [ValidationStatus]::InvalidFormat
             }
-            if ($_ -match "country code") {
+            if ($_ -match 'country code') {
                 return [ValidationStatus]::InvalidCountryCode
             }
-            if ($_ -match "national destination code") {
+            if ($_ -match 'national destination code') {
                 return [ValidationStatus]::InvalidNDC
             }
-            if ($_ -match "subscriber number") {
+            if ($_ -match 'subscriber number') {
                 return [ValidationStatus]::InvalidSubscriberNumber
             }
             return [ValidationStatus]::Incomplete
         }
     }
+
     # GetCountryCode extracts the country code from the phone number and returns the corresponding CountryCode object
     [CountryCode] GetCountryCode() {
-        $cleanNumber = $this.Value -replace '[^0-9+]', ''
-        $countryCodes = [CountryCode]::GetAllCountryCodes()
-        $cc = $null
+        $CleanNumber = $this.Value -replace '[^0-9+]', ''
+        $CountryCodes = [CountryCode]::GetAllCountryCodes()
+        $SelectedCountryCode = $null
         $CountryCodesFound = @()
-        foreach ($countryCode in $countryCodes) {
-            if ($countryCode.MatchesNumber($cleanNumber)) {
-                $CountryCodesFound += $countryCode
+        foreach ($CountryCodeEntry in $CountryCodes) {
+            if ($CountryCodeEntry.MatchesNumber($CleanNumber)) {
+                $CountryCodesFound += $CountryCodeEntry
             }
         }
         if ($CountryCodesFound.Count -eq 0) {
             throw [System.ArgumentException]::new("No matching country code found for phone number: $($this.Value). Unable to determine country code.")
         } elseif ($CountryCodesFound.Count -gt 1) {
-            $ndcFound = $false
-            foreach ($CountryCode in $CountryCodesFound) {
-                $NationalDestinationCodes = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCode.ISO3)
-                $NationalDestinationCode = $null
-                $cc = $CountryCode
-                $ccCode = $CountryCode.Code
-                foreach ($ndc in $NationalDestinationCodes) {
-                    $ndcCode = $ndc.Code
-                    if ($cleanNumber.StartsWith("$ccCode$ndcCode")) {
-                        $NationalDestinationCode = $ndc
-                        $ndcFound = $true
+            $NdcFound = $false
+            foreach ($CountryCodeEntry in $CountryCodesFound) {
+                $NdcList = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCodeEntry.ISO3)
+                $SelectedCountryCode = $CountryCodeEntry
+                $CountryCodeCode = $CountryCodeEntry.Code
+                foreach ($Ndc in $NdcList) {
+                    $NdcCode = $Ndc.Code
+                    if ($CleanNumber.StartsWith("$CountryCodeCode$NdcCode")) {
+                        $NdcFound = $true
                         break
                     }
                 }
-                if ($ndcFound) {
+                if ($NdcFound) {
                     break
                 }
             }
-            if (-not $ndcFound) {
+            if (-not $NdcFound) {
                 throw [System.ArgumentException]::new("No matching country code found for phone number: $($this.Value). Unable to determine country code.")
             }
         } else {
-            $cc = $CountryCodesFound[0]
+            $SelectedCountryCode = $CountryCodesFound[0]
         }
-        return $cc
+        return $SelectedCountryCode
     }
-    # GetNationalDestinationCode extracts the national destination code from the phone number and returns the corresponding NationalDestinationCode object 
+
+    # GetNationalDestinationCode extracts the national destination code from the phone number and returns the corresponding NationalDestinationCode object
     [NationalDestinationCode] GetNationalDestinationCode() {
-        $cleanNumber = $this.Value -replace '[^0-9+]', ''
-        $countryCode = $this.GetCountryCode()
-        if ($null -eq $countryCode) {
+        $CleanNumber = $this.Value -replace '[^0-9+]', ''
+        $CountryCodeItem = $this.GetCountryCode()
+        if ($null -eq $CountryCodeItem) {
             throw [System.ArgumentException]::new("Unable to determine country code for phone number: $($this.Value). Cannot determine national destination code without a valid country code.")
         }
 
-        $ndcs = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($countryCode.ISO3)
-        foreach ($ndc in $ndcs) {
-            if ($ndc.MatchesNumber($cleanNumber)) {
-                return $ndc
+        $NdcList = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCodeItem.ISO3)
+        foreach ($Ndc in $NdcList) {
+            if ($Ndc.MatchesNumber($CleanNumber)) {
+                return $Ndc
             }
         }
         throw [System.ArgumentException]::new("Unable to determine national destination code for phone number: $($this.Value).")
     }
+
     # GetSubscriberNumber extracts the subscriber number from the phone number and returns a SubscriberNumber object
     [SubscriberNumber] GetSubscriberNumber() {
-        $cleanNumber = $this.Value -replace '[^0-9+]', ''
-        $countryCode = $this.GetCountryCode()
-        if ($null -eq $countryCode) {
+        $CleanNumber = $this.Value -replace '[^0-9+]', ''
+        $CountryCodeItem = $this.GetCountryCode()
+        if ($null -eq $CountryCodeItem) {
             throw [System.ArgumentException]::new("Unable to determine country code for phone number: $($this.Value). Cannot determine subscriber number without a valid country code.")
         }
-        $ndc = $this.GetNationalDestinationCode()
-        if ($null -eq $ndc) {
+        $Ndc = $this.GetNationalDestinationCode()
+        if ($null -eq $Ndc) {
             throw [System.ArgumentException]::new("Unable to determine national destination code for phone number: $($this.Value). Cannot determine subscriber number without a valid national destination code.")
         }
-        # Assuming the subscriber number is the remaining digits after removing the country code and national destination code
-        $subscriberNumber = [SubscriberNumber]::new($cleanNumber.Substring($countryCode.Code.Length + $ndc.Code.Length), $countryCode.ISO3)
-        return $subscriberNumber
+        $SubscriberNumber = [SubscriberNumber]::new($CleanNumber.Substring($CountryCodeItem.Code.Length + $Ndc.Code.Length), $CountryCodeItem.ISO3)
+        return $SubscriberNumber
     }
 
     ###############################################
     ############# Static Methods ##################
-    # Parse takes a phone number string and returns a cleaned and validated version of the phone number in international format (starting with a plus sign followed by the country code and national destination code)    
-    static [string] Parse([string]$number) {
-        # Remove all non-digit and non-plus characters
-        $PhoneNumber = $number -replace '[^0-9+]', ''
-        # Ensure the phone number starts with a plus sign for international format
-        if ( -not ($PhoneNumber.StartsWith('+') ) ) {
+
+    # Parse takes a phone number string and returns a cleaned and validated version of the phone number in international format (starting with a plus sign followed by the country code and national destination code)
+    static [string] Parse([string]$Number) {
+        $PhoneNumber = $Number -replace '[^0-9+]', ''
+        if (-not ($PhoneNumber.StartsWith('+'))) {
             $PhoneNumber = $PhoneNumber.Insert(0, '+')
         }
-        # Ensure the phone number begins with a valid country code
         $CountryCodes = [CountryCode]::GetAllCountryCodes()
         $FoundCountryCodes = @()
-        foreach ($CountryCode in $CountryCodes) {
-            if ($PhoneNumber.StartsWith($CountryCode.Code)) {
-                $FoundCountryCodes += $CountryCode
+        foreach ($CountryCodeEntry in $CountryCodes) {
+            if ($PhoneNumber.StartsWith($CountryCodeEntry.Code)) {
+                $FoundCountryCodes += $CountryCodeEntry
             }
         }
         if ($FoundCountryCodes.Count -eq 0) {
-            throw [System.ArgumentException]::new("Invalid phone number format. Must start with a valid country code.")
+            throw [System.ArgumentException]::new('Invalid phone number format. Must start with a valid country code.')
         }
-    
-        # Ensure the phone number contains a national destination code
-        $cc = $null
-        $ndc = $null
-        foreach ($CountryCode in $FoundCountryCodes) {
-            $NDCS = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCode.ISO3)
-            foreach ($NationDestinationCode in $NDCS) {
-                #"$($NationDestinationCode.Code, $CountryCode.Code.Length)"
-                $CCplusNDC = "$($CountryCode.Code)$($NationDestinationCode.Code)"
-                if ($PhoneNumber.StartsWith($CCplusNDC)) {
-                    $cc = $CountryCode
-                    $ndc = $NationDestinationCode
+
+        $SelectedCountryCode = $null
+        $SelectedNdc = $null
+        foreach ($CountryCodeEntry in $FoundCountryCodes) {
+            $NdcList = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCodeEntry.ISO3)
+            foreach ($NdcEntry in $NdcList) {
+                $CountryCodePlusNdc = "$($CountryCodeEntry.Code)$($NdcEntry.Code)"
+                if ($PhoneNumber.StartsWith($CountryCodePlusNdc)) {
+                    $SelectedCountryCode = $CountryCodeEntry
+                    $SelectedNdc = $NdcEntry
                     break
                 }
             }
-            if ($null -ne $ndc) {
+            if ($null -ne $SelectedNdc) {
                 break
             }
         }
-    
-        if (($null -eq $ndc) -or ($null -eq $cc)) {
-            throw [System.ArgumentException]::new("Invalid phone number format. Must contain a valid country code and national destination code.")
+
+        if (($null -eq $SelectedNdc) -or ($null -eq $SelectedCountryCode)) {
+            throw [System.ArgumentException]::new('Invalid phone number format. Must contain a valid country code and national destination code.')
         }
-        # Ensure the phone number contains a valid subscriber number
-        #TODO: This is a bit of a hack to get the subscriber number for validation. It assumes the subscriber number is the remaining digits after removing the country code and national destination code. This may not be accurate for all phone number formats and should be improved in the future.
-        $null = [SubscriberNumber]::new($PhoneNumber.Substring($cc.Code.Length + $ndc.Code.Length), $cc.ISO3)
-    
-        # return the cleaned and validated phone number
+
+        # TODO(crk4): Improve subscriber number extraction logic. Currently assumes subscriber number
+        # is the remaining digits after removing CC and NDC. This may not hold for all numbering plans.
+        $null = [SubscriberNumber]::new($PhoneNumber.Substring($SelectedCountryCode.Code.Length + $SelectedNdc.Code.Length), $SelectedCountryCode.ISO3)
+
         return $PhoneNumber
     }
 }

@@ -1,4 +1,3 @@
-#using module "G:\20 - Projects\TelephoneNumber\Source\Classes\CountryCode.ps1"
 <#
 .SYNOPSIS
     Represents a national destination code within a telecommunications system.
@@ -55,90 +54,98 @@
 
 class NationalDestinationCode {
     [string]$Code                   # The national destination code (NDC) or area code.
-    [string]$ISO3       # The country code associated with this NDC.    
+    [string]$ISO3                   # The country code associated with this NDC.
     [string]$Description            # A description of the NDC, such as the city or region it serves.
     [string]$Region                 # The specific region or city associated with the NDC, if applicable.
     [bool]$IsGeographic             # Indicates whether the NDC is geographic (true) or non-geographic (false).
     [string]$NumberType             # The type of number associated with the NDC (e.g., "geographic", "mobile", "toll-free", etc.).
+
     ##############################################
     ################ Constructors ################
+
     # Constructor for NationalDestinationCode with required parameters
-    NationalDestinationCode ([string]$ISO3, [string]$code, [string]$description) {
+    NationalDestinationCode ([string]$ISO3, [string]$Code, [string]$Description) {
         if ([string]::IsNullOrWhiteSpace($ISO3)) {
-            throw [System.ArgumentException]::new("CountryCode cannot be null.")
-        } 
-        if ([string]::IsNullOrWhiteSpace($code)) {
-            throw [System.ArgumentException]::new("Code cannot be null or empty.")
+            throw [System.ArgumentException]::new('CountryCode cannot be null.')
         }
-        if ([string]::IsNullOrWhiteSpace($description)) {
-            throw [System.ArgumentException]::new("Description cannot be null or empty.")
+        if ([string]::IsNullOrWhiteSpace($Code)) {
+            throw [System.ArgumentException]::new('Code cannot be null or empty.')
+        }
+        if ([string]::IsNullOrWhiteSpace($Description)) {
+            throw [System.ArgumentException]::new('Description cannot be null or empty.')
         }
 
         $this.ISO3 = $ISO3
-        $CountryCode = [CountryCode]::FindByISO($ISO3)  | Select-Object -First 1
-        if ($null -eq $CountryCode) {
+        $CountryCodeResult = [CountryCode]::FindByISO($ISO3) | Select-Object -First 1
+        if ($null -eq $CountryCodeResult) {
             throw [System.ArgumentException]::new("Country code with ISO3 '$ISO3' not found.")
         }
-        $this.Code = $code
-        $this.Description = $description
+        $this.Code = $Code
+        $this.Description = $Description
         $this.Region = $null
         $this.IsGeographic = $false
-        $this.NumberType = "unknown"
+        $this.NumberType = 'unknown'
     }
+
     # Constructor for NationalDestinationCode with all parameters
-    NationalDestinationCode ([string]$ISO3, [string]$code, [string]$description, [string]$region, [bool]$isGeographic, [string]$numberType) {
+    NationalDestinationCode ([string]$ISO3, [string]$Code, [string]$Description, [string]$Region, [bool]$IsGeographic, [string]$NumberType) {
         if ([string]::IsNullOrWhiteSpace($ISO3)) {
-            throw [System.ArgumentException]::new("CountryCode cannot be null.")
+            throw [System.ArgumentException]::new('CountryCode cannot be null.')
         }
-        if ([string]::IsNullOrWhiteSpace($code)) {
-            throw [System.ArgumentException]::new("Code cannot be null or empty.")
+        if ([string]::IsNullOrWhiteSpace($Code)) {
+            throw [System.ArgumentException]::new('Code cannot be null or empty.')
         }
-        if ([string]::IsNullOrWhiteSpace($description)) {
-            throw [System.ArgumentException]::new("Description cannot be null or empty.")
-        }   
-        
+        if ([string]::IsNullOrWhiteSpace($Description)) {
+            throw [System.ArgumentException]::new('Description cannot be null or empty.')
+        }
+
         $this.ISO3 = $ISO3
 
-        $CountryCode = [CountryCode]::FindByISO($ISO3) | Select-Object -First 1
-        if ($null -eq $CountryCode) {
+        $CountryCodeResult = [CountryCode]::FindByISO($ISO3) | Select-Object -First 1
+        if ($null -eq $CountryCodeResult) {
             throw [System.ArgumentException]::new("Country code with ISO3 '$ISO3' not found.")
         }
-        $this.Code = $code
-        $this.Description = $description
-        $this.Region = $region
-        $this.IsGeographic = $isGeographic
-        if ([string]::IsNullOrWhiteSpace($numberType)) {
-            if ($isGeographic) {
-                $this.NumberType = "geographic"
+        $this.Code = $Code
+        $this.Description = $Description
+        $this.Region = $Region
+        $this.IsGeographic = $IsGeographic
+        if ([string]::IsNullOrWhiteSpace($NumberType)) {
+            if ($IsGeographic) {
+                $this.NumberType = 'geographic'
             } else {
-                $this.NumberType = "unknown"
+                $this.NumberType = 'unknown'
             }
         } else {
-            $this.NumberType = $numberType
+            $this.NumberType = $NumberType
         }
-        if (($isGeographic) -and ($this.NumberType -ne "geographic")) {
+        if (($IsGeographic) -and ($this.NumberType -ne 'geographic')) {
             throw [System.ArgumentException]::new("NumberType must be 'geographic' when IsGeographic is true.")
-        } 
-        if ((-not $isGeographic) -and ($this.NumberType -eq "geographic")) {
+        }
+        if ((-not $IsGeographic) -and ($this.NumberType -eq 'geographic')) {
             throw [System.ArgumentException]::new("NumberType must not be 'geographic' when IsGeographic is false.")
-        } 
+        }
     }
+
     ###############################################
     ################ Methods ######################
+
     # Check if a phone number starts with this NDC, ignoring any non-digit characters
-    [bool] MatchesNumber([string]$phoneNumber) {
-        $cleanNumber = $phoneNumber -replace '[^0-9+]', ''
-        $countryCode = [CountryCode]::FindByISO($this.ISO3) | Select-Object -First 1
-        $startsWidth = "+$($countryCode.NumericCode)$($this.Code)"
-        return $cleanNumber.StartsWith($startsWidth)
+    [bool] MatchesNumber([string]$PhoneNumber) {
+        $CleanNumber = $PhoneNumber -replace '[^0-9+]', ''
+        $CountryCodeResult = [CountryCode]::FindByISO($this.ISO3) | Select-Object -First 1
+        $StartsWidth = "+$($CountryCodeResult.NumericCode)$($this.Code)"
+        return $CleanNumber.StartsWith($StartsWidth)
     }
+
     # Override ToString for better display
     [string] ToString() {
-        $countryCode = [CountryCode]::FindByISO($this.ISO3) | Select-Object -First 1
-        return "$($this.Code) : $($countryCode.CountryName) ($($countryCode.Code)) - $($this.Description)"
+        $CountryCodeResult = [CountryCode]::FindByISO($this.ISO3) | Select-Object -First 1
+        return "$($this.Code) : $($CountryCodeResult.CountryName) ($($CountryCodeResult.Code)) - $($this.Description)"
     }
+
     ###############################################
     ############# Static Methods ##################
+
     static [void] ClearCache() {
         $script:cacheTelephoneNumberNationalDestinationCodes = $null
     }
@@ -146,76 +153,82 @@ class NationalDestinationCode {
     # NOTE: Only clears the NationalDestinationCode cache. This is intentional — each class
     # manages its own data directory independently so tests can validate cache
     # isolation per data type without cross-contamination.
-    static [void] SetDataDirectory([string]$directory) {
-        if (-not (Test-Path -Path $directory -PathType Container)) {
-            throw [System.IO.DirectoryNotFoundException]::new("The specified directory does not exist: $directory")
+    static [void] SetDataDirectory([string]$Directory) {
+        if (-not (Test-Path -Path $Directory -PathType Container)) {
+            throw [System.IO.DirectoryNotFoundException]::new("The specified directory does not exist: $Directory")
         }
-        $script:cacheTelephoneNumberDataDirectory = $directory
+        $script:cacheTelephoneNumberDataDirectory = $Directory
         [NationalDestinationCode]::ClearCache()
     }
+
     # Get a list of all national destination codes
     static [object[]] GetAllNationalDestinationCodes() {
-        # Check if the cache is already populated
         if ($null -ne $script:cacheTelephoneNumberNationalDestinationCodes) {
             return $script:cacheTelephoneNumberNationalDestinationCodes
-        }  
+        }
 
-        #$script:cacheTelephoneNumberNationalDestinationCodes = @()
-        $NDCs = New-Object System.Collections.ArrayList
+        $NationalDestinationCodes = New-Object System.Collections.ArrayList
 
-        # Load data into the list
         try {
-            $NationalDestinationCodeData = Import-Csv -Path (Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath NationalDestinationCodes.csv)
+            $NationalDestinationCodeData = Import-Csv -Path (Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath 'NationalDestinationCodes.csv')
         } catch {
-            throw [System.IO.FileNotFoundException]::new("NationalDestinationCodes.csv not found in data directory: $($script:cacheTelephoneNumberDataDirectory)")
+            throw [System.IO.FileNotFoundException]::new('NationalDestinationCodes.csv not found in data directory.')
         }
 
-        foreach ($row in $NationalDestinationCodeData) {
-            $NDC = [NationalDestinationCode]::new($row.ISO3, $row.Code, $row.Description, $row.Region, [bool]::Parse($row.IsGeographic), $row.NumberType)
-            $NDCs.Add($NDC) | Out-Null
+        foreach ($Row in $NationalDestinationCodeData) {
+            $Ndc = [NationalDestinationCode]::new($Row.ISO3, $Row.Code, $Row.Description, $Row.Region, [bool]::Parse($Row.IsGeographic), $Row.NumberType)
+            $NationalDestinationCodes.Add($Ndc) | Out-Null
         }
-        $script:cacheTelephoneNumberNationalDestinationCodes = $NDCs.ToArray()
+        $script:cacheTelephoneNumberNationalDestinationCodes = $NationalDestinationCodes.ToArray()
         return $script:cacheTelephoneNumberNationalDestinationCodes
     }
 
     # Get all National Destination Codes for a Country
-    static [object[]]  GetAllNationalDestinationCodeForCountry([object]$CountryCode) {
-        if ( $CountryCode.GetType().Name -eq "String") {
-            $cc = [CountryCode]::FindByISO($CountryCode)[0]
-            if ($null -eq $cc) {
-                throw [System.ArgumentException]::new("Country code with ISO3 '$CountryCode' not found.")
+    static [object[]] GetAllNationalDestinationCodeForCountry([object]$CountryCodeInput) {
+        if ($CountryCodeInput.GetType().Name -eq 'String') {
+            $CountryCodesFound = [CountryCode]::FindByISO($CountryCodeInput)
+            if ($CountryCodesFound.Count -eq 0) {
+                throw [System.ArgumentException]::new("Country code with ISO3 '$CountryCodeInput' not found.")
             }
+            $CountryCodeItem = $CountryCodesFound[0]
         } else {
-            if (($CountryCode.GetType().Name -ne "CountryCode") -or ($CountryCode.GetType().Name -ne "CountryCode")) {
-                throw [System.ArgumentException]::new("CountryCode must be a string (ISO3) or a CountryCode object.")
+            if ($CountryCodeInput.GetType().Name -ne 'CountryCode') {
+                throw [System.ArgumentException]::new('CountryCode must be a string (ISO3) or a CountryCode object.')
             }
-            $cc = $CountryCode
+            $CountryCodeItem = $CountryCodeInput
         }
-        
-        return ( [NationalDestinationCode]::GetAllNationalDestinationCodes() | Where-Object { $_.ISO3 -eq $cc.ISO3 } )
+
+        $NationalDestinationCodes = @([NationalDestinationCode]::GetAllNationalDestinationCodes() | Where-Object { $_.ISO3 -eq $CountryCodeItem.ISO3 })
+        return $NationalDestinationCodes
     }
+
     static [NationalDestinationCode] FindByCode([string]$ISO, [string]$Code) {
-        $countryCode = [CountryCode]::FindByISO($ISO)
-        return [NationalDestinationCode]::GetAllNationalDestinationCodes() | Where-Object { ($_.ISO3 -eq $countryCode.ISO3) -and ($_.Code -eq $Code) }
+        $CountryCodeResults = [CountryCode]::FindByISO($ISO)
+        if ($CountryCodeResults.Count -eq 0) {
+            return $null
+        }
+        return [NationalDestinationCode]::GetAllNationalDestinationCodes() | Where-Object { ($_.ISO3 -eq $CountryCodeResults[0].ISO3) -and ($_.Code -eq $Code) }
     }
-    static [NationalDestinationCode] FindByCode([int]$numericCode, [string]$Code) {
-        $countryCodes = [CountryCode]::FindByCode($numericCode)
-        
-        foreach ($country in $countryCodes) {
-            $destinationCode = [NationalDestinationCode]::GetAllNationalDestinationCodes() | Where-Object { ($_.ISO3 -eq $country.ISO3) -and ($_.Code -eq $Code) }
-            if ( $null -ne $destinationCode ) {
-                return $destinationCode
+
+    static [NationalDestinationCode] FindByCode([int]$NumericCode, [string]$Code) {
+        $CountryCodes = [CountryCode]::FindByCode($NumericCode)
+
+        foreach ($Country in $CountryCodes) {
+            $DestinationCode = [NationalDestinationCode]::GetAllNationalDestinationCodes() | Where-Object { ($_.ISO3 -eq $Country.ISO3) -and ($_.Code -eq $Code) }
+            if ($null -ne $DestinationCode) {
+                return $DestinationCode
             }
         }
         return $null
     }
-    static [bool] isValidCode( [string]$ISO3, [string]$Code ) {
+
+    static [bool] isValidCode([string]$ISO3, [string]$Code) {
         try {
-            return (([NationalDestinationCode]::GetAllNationalDestinationCodeForCountry( $ISO3 ) | Where-Object { $_.Code -eq $Code }).Count -gt 0)
+            $MatchingCodes = @([NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($ISO3) | Where-Object { $_.Code -eq $Code })
+            return $MatchingCodes.Count -gt 0
         } catch {
+            Write-Verbose "isValidCode check failed for ISO3='$ISO3', Code='$Code': $_"
             return $false
         }
-        # return (([NationalDestinationCode]::GetAllNationalDestinationCodeForCountry( $ISO3 ) | Where-Object { $_.Code -eq $Code }).Count -gt 0)
     }
 }
-

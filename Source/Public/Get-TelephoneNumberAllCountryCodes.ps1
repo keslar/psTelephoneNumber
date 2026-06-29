@@ -16,6 +16,8 @@
 #>
 function Get-TelephoneNumberAllCountryCodes {
     [CmdletBinding()]
+    [OutputType([CountryCode])]
     param ()
+
     return [CountryCode]::GetAllCountryCodes()
 }
