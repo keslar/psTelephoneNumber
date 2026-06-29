@@ -1,0 +1,40 @@
+<svg width="680" height="680" viewBox="0 0 680 680" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>PowerShell TelephoneNumber module icon</title>
+  <desc>A dark hexagonal icon with a PowerShell prompt and stylized phone number formatting symbols</desc>
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .hex-stroke { fill: #2a2a42; stroke: #5b5fef; stroke-width: 4; }
+      .ps-blue { fill: #5b8cff; }
+      .ps-cyan { fill: #4fc3c3; }
+      .ps-white { fill: #e2e2f0; }
+      .ps-green { fill: #4ec994; }
+      .ps-gray { fill: #7b7b9a; }
+      .ps-yellow { fill: #f0c040; }
+      .mono { font-family: 'Courier New', monospace; }
+    </style>
+  </defs>
+
+  <polygon class="hex-stroke" points="340,60 580,200 580,480 340,620 100,480 100,200" />
+  <polygon fill="none" stroke="#5b5fef" stroke-width="1.5" opacity="0.3" points="340,90 555,215 555,455 340,590 125,455 125,215" />
+
+  <text x="175" y="270" class="mono ps-blue" font-size="72" font-weight="bold">PS</text>
+  <text x="175" y="340" class="mono ps-cyan" font-size="64" font-weight="bold">&gt;_</text>
+
+  <text x="175" y="405" class="mono ps-yellow" font-size="32" font-weight="bold">+1</text>
+  <text x="238" y="405" class="mono ps-white" font-size="32">412</text>
+  <text x="310" y="405" class="mono ps-gray" font-size="32">·</text>
+  <text x="330" y="405" class="mono ps-white" font-size="32">555</text>
+  <text x="392" y="405" class="mono ps-gray" font-size="32">·</text>
+  <text x="412" y="405" class="mono ps-white" font-size="32">1234</text>
+
+  <line x1="195" y1="430" x2="490" y2="430" stroke="#5b5fef" stroke-width="2.5" stroke-dasharray="6,4"/>
+  <polygon fill="#5b5fef" points="490,424 502,430 490,436"/>
+
+  <text x="195" y="460" class="mono ps-green" font-size="22">e.164 · sip · tel · uri</text>
+
+  <polyline fill="none" stroke="#5b5fef" stroke-width="2.5" opacity="0.5" points="110,215 110,195 130,195"/>
+  <polyline fill="none" stroke="#5b5fef" stroke-width="2.5" opacity="0.5" points="550,215 550,195 530,195"/>
+  <polyline fill="none" stroke="#5b5fef" stroke-width="2.5" opacity="0.5" points="110,465 110,485 130,485"/>
+  <polyline fill="none" stroke="#5b5fef" stroke-width="2.5" opacity="0.5" points="550,465 550,485 530,485"/>
+</svg>

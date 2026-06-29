@@ -24,7 +24,7 @@ GUID = 'e75bf813-326c-4c04-b5a7-f07a415e9650'
 Author = '[.Keslar <crk4@pitt.edu>'
 
 # Company or vendor of this module
-CompanyName = 'Unknown'
+CompanyName = 'University of Pittsburgh, Pitt Digital'
 
 # Copyright statement for this module
 Copyright = '(c) [.Keslar <crk4@pitt.edu>. All rights reserved.'
@@ -33,7 +33,7 @@ Copyright = '(c) [.Keslar <crk4@pitt.edu>. All rights reserved.'
 Description = 'Classes and cmdlets related to telephone numbers.'
 
 # Minimum version of the PowerShell engine required by this module
-# PowerShellVersion = ''
+PowerShellVersion = '5.1'
 
 # Name of the PowerShell host required by this module
 # PowerShellHostName = ''
@@ -69,7 +69,16 @@ Description = 'Classes and cmdlets related to telephone numbers.'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @()
+FunctionsToExport = @(
+    'Format-TelephoneNumber',
+    'Get-TelephoneNumberAllCountryCodes',
+    'Get-TelephoneNumberCountryCode',
+    'Get-TelephoneNumberNationalDestinationCode',
+    'Get-TelephoneNumberNationalDestinationCodes',
+    'Get-TelephoneNumberSubscriberNumber',
+    'New-TelephoneNumber',
+    'Test-TelephoneNumber'
+)
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -95,16 +104,16 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = @('TelephoneNumber', 'Phone', 'E164', 'ITU', 'Validation', 'Parsing')
 
         # A URL to the license for this module.
         # LicenseUri = ''
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/keslar/psTelephoneNumber'
 
         # A URL to an icon representing this module.
-        # IconUri = ''
+        IconUri = 'https://raw.githubusercontent.com/keslar/psTelephoneNumber/v1.0.1/Assets/icon.svg'
 
         # ReleaseNotes of this module
         # ReleaseNotes = ''

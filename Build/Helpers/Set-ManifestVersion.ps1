@@ -24,6 +24,16 @@ function Set-ManifestVersion {
     param(
         [string]$Version
     ) 
+    # Update the ModuleVersion field
     Update-ModuleManifest -Path ($Script:ManifestPath) -ModuleVersion $Version
+
+    # Update the IconUri version tag in the manifest (e.g. .../v1.0.0/... -> .../v1.2.3/...)
+    $content = Get-Content -Path $Script:ManifestPath -Raw
+    $updated = $content -replace '(https://raw\.githubusercontent\.com/keslar/psTelephoneNumber/)v[\d]+\.[\d]+\.[\d]+(/.+)', "`${1}v$Version`${2}"
+    if ($updated -ne $content) {
+        Set-Content -Path $Script:ManifestPath -Value $updated -NoNewline
+        Write-Host "  IconUri version tag updated to v$Version" -ForegroundColor Green
+    }
+
     Write-Host "Module manifest updated to version $Version" -ForegroundColor Green 
 }

@@ -1,0 +1,191 @@
+TOPIC
+    about_TelephoneNumber
+
+SHORT DESCRIPTION
+    Provides cmdlets for parsing, validating, and decomposing international
+    telephone numbers.
+
+LONG DESCRIPTION
+    The psTelephoneNumber module parses telephone number strings into structured
+    objects that expose the individual components of a number: country code,
+    national destination code (NDC), and subscriber number. Numbers are
+    normalised to E.164 format internally and can be formatted for display in
+    several standard representations.
+
+    The module validates numbers against ITU-T E.164 rules using bundled CSV
+    data files covering 245 country codes, over 5,100 national destination
+    codes, and subscriber number length/format rules for each country.
+
+  TELEPHONE NUMBER COMPONENTS
+
+    A fully-qualified international telephone number consists of three parts:
+
+      +<CountryCode><NDC><SubscriberNumber>
+
+    Example: +14125551234
+      Country Code       : 1   (United States / Canada)
+      NDC (area code)    : 412 (Pittsburgh, PA)
+      Subscriber Number  : 5551234
+
+  INPUT FORMATS
+
+    New-TelephoneNumber and Test-TelephoneNumber accept numbers in a variety
+    of common notations. The following are all equivalent:
+
+      "+14125551234"
+      "+1 (412) 555-1234"
+      "+1 412 555 1234"
+
+    A leading '+' followed by the country calling code is required for
+    unambiguous parsing of international numbers.
+
+  OUTPUT FORMATS
+
+    Format-TelephoneNumber supports four output formats controlled by the
+    -Format parameter (PhoneNumberFormat enum):
+
+      E164       +14125551234          ITU-T E.164 (default)
+      National   (412) 555-1234        Local display format (US only)
+      RFC3966    tel:+1-412-555-1234   RFC 3966 URI format
+      Dialable   +14125551234          Direct-dial string (E.164)
+
+  VALIDATION RESULTS
+
+    Test-TelephoneNumber returns a ValidationStatus enum value:
+
+      Valid                  Number is fully valid
+      InvalidCountryCode     Country calling code not recognised
+      InvalidNDC             Area/city code not found for that country
+      InvalidSubscriberNumber  Subscriber number fails length/format rules
+      InvalidFormat          String does not match any supported notation
+      Incomplete             Number appears valid in structure but is missing
+                             a required component (e.g. no leading '+')
+
+  DATA FILES
+
+    The module loads three CSV data files at runtime from the Data/ directory
+    bundled with the module. Results are cached in memory after the first call
+    so repeated lookups do not re-read from disk.
+
+      CountryCodes.csv              245 country dialing codes with ISO2,
+                                    ISO3, and numeric code columns.
+
+      NationalDestinationCodes.csv  5,100+ area and city codes keyed by
+                                    ISO3, including region, number type,
+                                    and geographic flag.
+
+      SubscriberNumberFormats.csv   Per-country subscriber number length
+                                    rules (min/max digits), trunk prefix,
+                                    and format pattern.
+
+CMDLETS
+
+    New-TelephoneNumber
+        Creates a TelephoneNumber object from an input string.
+
+        New-TelephoneNumber -Number '+14125551234'
+
+    Test-TelephoneNumber
+        Validates a telephone number string and returns a ValidationStatus.
+        Accepts pipeline input.
+
+        Test-TelephoneNumber -Number '+14125551234'
+        '+14125551234' | Test-TelephoneNumber
+
+    Format-TelephoneNumber
+        Formats a TelephoneNumber object for display. Accepts pipeline input.
+
+        $phone | Format-TelephoneNumber -Format RFC3966
+        Format-TelephoneNumber -InputObject $phone -Format National
+
+    Get-TelephoneNumberCountryCode
+        Returns the CountryCode object for a telephone number string.
+
+        Get-TelephoneNumberCountryCode -TelephoneNumber '+14125551234'
+
+    Get-TelephoneNumberNationalDestinationCode
+        Returns the NationalDestinationCode object for a telephone number string.
+
+        Get-TelephoneNumberNationalDestinationCode -TelephoneNumber '+14125551234'
+
+    Get-TelephoneNumberSubscriberNumber
+        Returns the SubscriberNumber object for a telephone number string.
+
+        Get-TelephoneNumberSubscriberNumber -TelephoneNumber '+14125551234'
+
+    Get-TelephoneNumberNationalDestinationCodes
+        Returns all national destination codes for a country, by ISO3 code or
+        by calling code.
+
+        Get-TelephoneNumberNationalDestinationCodes -ISO 'USA'
+        Get-TelephoneNumberNationalDestinationCodes -Code '+44'
+
+    Get-TelephoneNumberAllCountryCodes
+        Returns all 245 supported country code records.
+
+        Get-TelephoneNumberAllCountryCodes
+
+EXAMPLES
+
+    Example 1: Parse a number and inspect its components
+
+        $phone = New-TelephoneNumber -Number '+1 (412) 555-1234'
+
+        $cc  = Get-TelephoneNumberCountryCode            -TelephoneNumber $phone.Value
+        $ndc = Get-TelephoneNumberNationalDestinationCode -TelephoneNumber $phone.Value
+        $sub = Get-TelephoneNumberSubscriberNumber        -TelephoneNumber $phone.Value
+
+        $cc.ISO3          # USA
+        $cc.Code          # 1
+        $ndc.Code         # 412
+        $ndc.Description  # Pittsburgh, PA
+        $sub.Value        # 5551234
+
+    Example 2: Validate a number before using it
+
+        $status = Test-TelephoneNumber -Number '+14125551234'
+        if ($status -eq [ValidationStatus]::Valid) {
+            # proceed
+        }
+
+    Example 3: Format a number for display
+
+        $phone = New-TelephoneNumber -Number '+14125551234'
+        $phone | Format-TelephoneNumber -Format RFC3966
+        # Returns: tel:+1-412-555-1234
+
+    Example 4: Pipeline validation of multiple numbers
+
+        '+14125551234', '+447911123456', 'notanumber' |
+            Test-TelephoneNumber
+
+    Example 5: List all area codes for the United Kingdom
+
+        Get-TelephoneNumberNationalDestinationCodes -ISO 'GBR'
+
+    Example 6: Find all countries sharing the +1 calling code
+
+        Get-TelephoneNumberAllCountryCodes | Where-Object { $_.Code -eq '1' }
+
+NOTES
+    - Numbers must include a leading '+' and country calling code for full
+      validation. Numbers without a '+' prefix will parse but may return
+      Incomplete from Test-TelephoneNumber.
+    - National formatting (Format-TelephoneNumber -Format National) currently
+      applies full formatting for US numbers only. Non-US numbers return the
+      E.164 value.
+    - The +1 calling code is shared by the United States, Canada, and many
+      Caribbean nations. Get-TelephoneNumberCountryCode will return the first
+      matching country for ambiguous +1 numbers.
+
+SEE ALSO
+    New-TelephoneNumber
+    Test-TelephoneNumber
+    Format-TelephoneNumber
+    Get-TelephoneNumberCountryCode
+    Get-TelephoneNumberNationalDestinationCode
+    Get-TelephoneNumberSubscriberNumber
+    Get-TelephoneNumberNationalDestinationCodes
+    Get-TelephoneNumberAllCountryCodes
+    ITU-T E.164: https://www.itu.int/rec/T-REC-E.164
+    RFC 3966:    https://www.rfc-editor.org/rfc/rfc3966

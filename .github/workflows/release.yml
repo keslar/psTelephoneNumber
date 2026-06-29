@@ -75,7 +75,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: unit-test-results-release
-          path: TestResults-Unit.xml
+          path: Tests/Results/TestResults-Unit.xml
           if-no-files-found: warn
 
       - name: Upload integration test results
@@ -83,7 +83,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: integration-test-results-release
-          path: TestResults-Integration.xml
+          path: Tests/Results/TestResults-Integration.xml
           if-no-files-found: warn
 
       # -----------------------------------------------------------------------
