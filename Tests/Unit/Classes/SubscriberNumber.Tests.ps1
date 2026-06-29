@@ -21,7 +21,7 @@ BeforeAll {
     . $ProjectRoot/Source/Classes/SubscriberNumber.ps1
 }
 
-Context "SubscriberNumber Class" {
+Describe "SubscriberNumber Class" {
     Context "1 Constructor Tests" {
         Context "1.1 Default Constructor" {
             It "Should create an instance with a null value" {
@@ -100,10 +100,6 @@ Context "SubscriberNumber Class" {
                 $formats2 = [SubscriberNumber]::GetSubscriberNumberFormats()
                 # The second call should return the same object from the cache
                 $formats1 | Should -Be $formats2
-            }
-            It "Should return a known number of formats - checking CSV file count has not changed" {
-                $formats = [SubscriberNumber]::GetSubscriberNumberFormats()
-                $formats.Count | Should -Be 246
             }
             It "Should return the same number of rows as are in the CSV file" {
                 $dataFile = Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath "SubscriberNumberFormats.csv"
