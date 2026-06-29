@@ -105,7 +105,8 @@ class CountryCode {
     # Format a phone number with this country code
     [string] FormatNumber([string]$nationalNumber) {
         $cleanNumber = $nationalNumber -replace '[^0-9]', ''
-        return "$($this.Code)$cleanNumber"
+        $cleanCode = $this.Code -replace '[^0-9+]', ''
+        return "$cleanCode$cleanNumber"
     }
     # Check if a phone number starts with this country code, ignoring subcodes,must start with+ sign and country code, but can have additional digits after the country code
     [bool] MatchesNumber([string]$phoneNumber) {
