@@ -226,10 +226,7 @@ class TelephoneNumber {
         }
         # Ensure the phone number contains a valid subscriber number
         #TODO: This is a bit of a hack to get the subscriber number for validation. It assumes the subscriber number is the remaining digits after removing the country code and national destination code. This may not be accurate for all phone number formats and should be improved in the future.
-        $SubscriberNumber = [SubscriberNumber]::new($PhoneNumber.Substring($cc.Code.Length + $ndc.Code.Length), $cc.ISO3)
-        if ($null -eq $SubscriberNumber) {
-            throw [System.ArgumentException]::new("Invalid phone number format. Must contain a valid subscriber number.")
-        }
+        $null = [SubscriberNumber]::new($PhoneNumber.Substring($cc.Code.Length + $ndc.Code.Length), $cc.ISO3)
     
         # return the cleaned and validated phone number
         return $PhoneNumber
