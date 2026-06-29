@@ -186,7 +186,7 @@ class NationalDestinationCode {
             if (($CountryCode.GetType().Name -ne "CountryCode") -or ($CountryCode.GetType().Name -ne "CountryCode")) {
                 throw [System.ArgumentException]::new("CountryCode must be a string (ISO3) or a CountryCode object.")
             }
-            $cc = $CountryCode[0]
+            $cc = $CountryCode
         }
         
         return ( [NationalDestinationCode]::GetAllNationalDestinationCodes() | Where-Object { $_.ISO3 -eq $cc.ISO3 } )
