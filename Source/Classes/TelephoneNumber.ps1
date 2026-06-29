@@ -1,7 +1,3 @@
-#using module "G:\20 - Projects\TelephoneNumber\Source\Classes\CountryCode.ps1"
-#using module "G:\20 - Projects\TelephoneNumber\Source\Classes\NationalDestinationCode.ps1"
-#using module "G:\20 - Projects\TelephoneNumber\Source\Classes\SubscriberNumber.ps1"
-
 <#
 .SYNOPSIS
     Represents a full telephone number within a telecommunications system.
@@ -17,12 +13,14 @@
 
 .METHODS
     ToString(): Returns the normalized telephone number as a string.
+    Format(format): Returns the number formatted according to the specified format.
     GetCountryCode(): Returns the CountryCode object associated with the phone
         number.
     GetNationalDestinationCode(): Returns the NationalDestinationCode object
         associated with the phone number.
     GetSubscriberNumber(): Returns the SubscriberNumber object associated with
         the phone number.
+    Validate(): Returns a ValidationStatus indicating the validation result.
     Parse(number): Cleans, validates, and normalizes a phone number string.
 
 .EXAMPLE
@@ -61,10 +59,54 @@ class TelephoneNumber {
     }
     ###############################################
     ################ Methods ######################
-    #TODO: Add methods to return formated versions of the phone number, such as E.164 format, national format, etc. Also add methods to return the country code, national destination code, and subscriber number as separate objects.
-    # Override ToString for better display    
+    # Override ToString for better display
     [string] ToString() {
         return $this.Value
+    }
+    # Format returns the telephone number in the specified format
+    [string] Format([PhoneNumberFormat]$format) {
+        if ($format -eq [PhoneNumberFormat]::E164 -or $format -eq [PhoneNumberFormat]::Dialable) {
+            return $this.Value
+        }
+        if ($format -eq [PhoneNumberFormat]::National) {
+            $cc = $this.GetCountryCode()
+            $ndc = $this.GetNationalDestinationCode()
+            $subscriber = $this.GetSubscriberNumber()
+            if ($cc.ISO2 -eq 'US' -and $subscriber.Value.Length -ge 7) {
+                return "({0}) {1}-{2}" -f $ndc.Code, $subscriber.Value.Substring(0, 3), $subscriber.Value.Substring(3)
+            }
+            return $this.Value
+        }
+        if ($format -eq [PhoneNumberFormat]::RFC3966) {
+            $cc = $this.GetCountryCode()
+            $ndc = $this.GetNationalDestinationCode()
+            $subscriber = $this.GetSubscriberNumber()
+            return "tel:{0}-{1}-{2}" -f $cc.Code, $ndc.Code, $subscriber.Value
+        }
+        return $this.Value
+    }
+    # Validate returns a ValidationStatus indicating the validation result
+    [ValidationStatus] Validate() {
+        try {
+            $null = $this.GetCountryCode()
+            $null = $this.GetNationalDestinationCode()
+            $null = $this.GetSubscriberNumber()
+            return [ValidationStatus]::Valid
+        } catch {
+            if ($_ -match "Invalid phone number format") {
+                return [ValidationStatus]::InvalidFormat
+            }
+            if ($_ -match "country code") {
+                return [ValidationStatus]::InvalidCountryCode
+            }
+            if ($_ -match "national destination code") {
+                return [ValidationStatus]::InvalidNDC
+            }
+            if ($_ -match "subscriber number") {
+                return [ValidationStatus]::InvalidSubscriberNumber
+            }
+            return [ValidationStatus]::Incomplete
+        }
     }
     # GetCountryCode extracts the country code from the phone number and returns the corresponding CountryCode object
     [CountryCode] GetCountryCode() {
@@ -80,25 +122,26 @@ class TelephoneNumber {
         if ($CountryCodesFound.Count -eq 0) {
             throw [System.ArgumentException]::new("No matching country code found for phone number: $($this.Value). Unable to determine country code.")
         } elseif ($CountryCodesFound.Count -gt 1) {
-            # Write-Warning "Multiple country codes found for phone number: $($this.Value)."
+            $ndcFound = $false
             foreach ($CountryCode in $CountryCodesFound) {
-                #Write-Warning "  Checking Country code: $($CountryCode.Code), ISO3: $($CountryCode.ISO3)"
                 $NationalDestinationCodes = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCode.ISO3)
                 $NationalDestinationCode = $null
                 $cc = $CountryCode
                 $ccCode = $CountryCode.Code
                 foreach ($ndc in $NationalDestinationCodes) {
-                    # Write-Warning "Checking NDC: $($ndc.Code) for country code: $($CountryCode.Code)"
                     $ndcCode = $ndc.Code
                     if ($cleanNumber.StartsWith("$ccCode$ndcCode")) {
                         $NationalDestinationCode = $ndc
+                        $ndcFound = $true
                         break
                     }
                 }
-                if ($null -ne $NationalDestinationCode) {
-                    # Write-Warning "Found matching country code: $($CountryCode.Code) and national destination code: $($NationalDestinationCode.Code) for phone number: $($this.Value)."
+                if ($ndcFound) {
                     break
                 }
+            }
+            if (-not $ndcFound) {
+                throw [System.ArgumentException]::new("No matching country code found for phone number: $($this.Value). Unable to determine country code.")
             }
         } else {
             $cc = $CountryCodesFound[0]
