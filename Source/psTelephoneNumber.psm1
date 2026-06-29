@@ -1,7 +1,8 @@
 $sourceDirectories = @('ENUMs', 'Classes', 'Public', 'Private')
 
-if (Test-Path -Path '.\.prefix.ps1') {
-    . .\.prefix.ps1
+$prefixPath = Join-Path -Path $PSScriptRoot -ChildPath 'prefix.ps1'
+if (Test-Path -Path $prefixPath) {
+    . $prefixPath
 }
 
 foreach ( $dir in $sourceDirectories) { 
@@ -15,6 +16,7 @@ foreach ( $dir in $sourceDirectories) {
     } 
 }   
 
-if (Test-Path -Path '.\.suffix.ps1') {
-    . .\.suffix.ps1
+$suffixPath = Join-Path -Path $PSScriptRoot -ChildPath 'suffix.ps1'
+if (Test-Path -Path $suffixPath) {
+    . $suffixPath
 }
