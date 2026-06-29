@@ -1,5 +1,3 @@
-#using module "G:\20 - Projects\TelephoneNumber\Source\Classes\CountryCode.ps1"
-#using module "G:\20 - Projects\TelephoneNumber\Source\Classes\NationalDestinationCode.ps1"
 $script:cacheTelephoneNumberSubscriberNumberFormats = $null
 <#
 .SYNOPSIS
@@ -97,6 +95,9 @@ class SubscriberNumber {
         $script:cacheTelephoneNumberSubscriberNumberFormats = $null
     }
 
+    # NOTE: Only clears the SubscriberNumber cache. This is intentional — each class
+    # manages its own data directory independently so tests can validate cache
+    # isolation per data type without cross-contamination.
     static [void] SetDataDirectory([string]$directory) {
         if (-not (Test-Path -Path $directory -PathType Container)) {
             throw [System.IO.DirectoryNotFoundException]::new("The specified directory does not exist: $directory")
