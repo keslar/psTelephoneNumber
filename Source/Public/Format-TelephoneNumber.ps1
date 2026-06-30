@@ -27,15 +27,13 @@
     Returns: tel:+1-412-555-1234
 #>
 function Format-TelephoneNumber {
-    [CmdletBinding(DefaultParameterSetName = 'Pipeline')]
+    [CmdletBinding()]
     [OutputType([string])]
     param(
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline, ParameterSetName = 'Pipeline')]
-        [Parameter(Mandatory, Position = 0, ParameterSetName = 'InputObject')]
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [TelephoneNumber]$InputObject,
 
         [Parameter()]
-        [ValidateSet('E164', 'National', 'RFC3966', 'Dialable')]
         [PhoneNumberFormat]$Format = 'E164'
     )
 
