@@ -132,7 +132,7 @@ class CountryCode {
         $script:cacheTelephoneNumberCountryCodes = $null
     }
 
-    # NOTE: Only clears the CountryCode cache. This is intentional — each class
+    # NOTE: Only clears the CountryCode cache. This is intentional -- each class
     # manages its own data directory independently so tests can validate cache
     # isolation per data type without cross-contamination.
     static [void] SetDataDirectory([string]$Directory) {
