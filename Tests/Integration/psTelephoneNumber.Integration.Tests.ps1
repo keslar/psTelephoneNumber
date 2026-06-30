@@ -367,17 +367,17 @@ Describe 'Get-TelephoneNumberNationalDestinationCodes' {
 
     Context 'By dialing code' {
         It 'Returns results for country code +1' {
-            $result = Get-TelephoneNumberNationalDestinationCodes -Code '+1'
+            $result = Get-TelephoneNumberNationalDestinationCodes -CallingCode '+1'
             $result | Should -Not -BeNullOrEmpty
         }
 
         It 'Returns results for country code +44' {
-            $result = Get-TelephoneNumberNationalDestinationCodes -Code '+44'
+            $result = Get-TelephoneNumberNationalDestinationCodes -CallingCode '+44'
             $result | Should -Not -BeNullOrEmpty
         }
 
         It 'Returns NationalDestinationCode objects when querying by code' {
-            $result = Get-TelephoneNumberNationalDestinationCodes -Code '+49'
+            $result = Get-TelephoneNumberNationalDestinationCodes -CallingCode '+49'
             $result[0].GetType().Name | Should -Be 'NationalDestinationCode'
         }
     }

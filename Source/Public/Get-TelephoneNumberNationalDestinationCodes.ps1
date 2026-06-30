@@ -9,7 +9,7 @@
 .PARAMETER ISO
     The ISO country code used to find matching national destination codes.
 
-.PARAMETER Code
+.PARAMETER CallingCode
     The country calling code used to find matching national destination codes.
 
 .OUTPUTS
@@ -21,7 +21,7 @@
     Returns all national destination codes for the specified ISO country code.
 
 .EXAMPLE
-    Get-TelephoneNumberNationalDestinationCodes -Code '+1'
+    Get-TelephoneNumberNationalDestinationCodes -CallingCode '+1'
 
     Returns all national destination codes for countries that use the supplied
     calling code.
@@ -33,12 +33,12 @@ function Get-TelephoneNumberNationalDestinationCodes {
         [Parameter(ParameterSetName = 'ByISO', Mandatory)]
         [string]$ISO,
         [Parameter(ParameterSetName = 'ByCode', Mandatory)]
-        [string]$Code
+        [string]$CallingCode
     )
     if ($ISO) {
         $CountryCodes = [CountryCode]::FindByISO($ISO)
     } else {
-        $CountryCodes = [CountryCode]::FindByCode($Code)
+        $CountryCodes = [CountryCode]::FindByCode($CallingCode)
     }
 
     $NationalDestinationCodes = [System.Collections.Generic.List[NationalDestinationCode]]::new()

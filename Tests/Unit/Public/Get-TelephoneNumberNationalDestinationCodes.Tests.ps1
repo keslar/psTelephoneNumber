@@ -34,10 +34,10 @@ Describe "Public cmdlet - Get-TelephoneNumberNationalDestinationCodes (ByISO/ByC
     }
     Context "2 ByCode parameter set" {
         It "2.1 Should not throw for a valid country code" {
-            { Get-TelephoneNumberNationalDestinationCodes -Code "+1" } | Should -Not -Throw
+            { Get-TelephoneNumberNationalDestinationCodes -CallingCode "+1" } | Should -Not -Throw
         }
         It "2.2 Should return results for country code +1" {
-            $result = Get-TelephoneNumberNationalDestinationCodes -Code "+1"
+            $result = Get-TelephoneNumberNationalDestinationCodes -CallingCode "+1"
             $result | Should -Not -BeNullOrEmpty
         }
     }
