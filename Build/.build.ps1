@@ -178,7 +178,7 @@ task TestUnit Analyze, {
         $pesterConfig.CodeCoverage.Path = @("$SourcePath/**/*.ps1")
         $pesterConfig.CodeCoverage.OutputPath = Join-Path $TestsPath 'Results/Coverage-Unit.xml'
         $pesterConfig.CodeCoverage.CoveragePercentTarget = $CoverageThreshold
-        Write-Warning "  Rwriting results to $($pesterConfig.TestResult.OutputPath) and $($pesterConfig.CodeCoverage.OutputPath) - these will be overwritten on each run of the TestUnit task."
+        Write-Warning "  Writing results to $($pesterConfig.TestResult.OutputPath) and $($pesterConfig.CodeCoverage.OutputPath) - these will be overwritten on each run of the TestUnit task."
         $results = Invoke-Pester -Configuration $pesterConfig
 
         Write-Host "  Passed: $($results.PassedCount)   Failed: $($results.FailedCount)   Skipped: $($results.SkippedCount)"
