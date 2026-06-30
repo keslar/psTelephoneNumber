@@ -22,12 +22,14 @@ function Get-TelephoneNumberCountryCode {
     [CmdletBinding()]
     [OutputType([CountryCode])]
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline)]
         [string]$TelephoneNumber
     )
-    $PhoneNumber = [TelephoneNumber]::new($TelephoneNumber)
-    if (-not $PhoneNumber.Value) {
-        throw 'Invalid telephone number format. Please provide a valid number.'
+    process {
+        $PhoneNumber = [TelephoneNumber]::new($TelephoneNumber)
+        if (-not $PhoneNumber.Value) {
+            throw 'Invalid telephone number format. Please provide a valid number.'
+        }
+        return $PhoneNumber.GetCountryCode()
     }
-    return $PhoneNumber.GetCountryCode()
 }

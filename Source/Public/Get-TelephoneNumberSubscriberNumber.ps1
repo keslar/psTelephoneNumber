@@ -22,12 +22,14 @@ function Get-TelephoneNumberSubscriberNumber {
     [CmdletBinding()]
     [OutputType([SubscriberNumber])]
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline)]
         [string]$TelephoneNumber
     )
-    $PhoneNumber = [TelephoneNumber]::new($TelephoneNumber)
-    if (-not $PhoneNumber.Value) {
-        throw 'Invalid telephone number format. Please provide a valid number.'
+    process {
+        $PhoneNumber = [TelephoneNumber]::new($TelephoneNumber)
+        if (-not $PhoneNumber.Value) {
+            throw 'Invalid telephone number format. Please provide a valid number.'
+        }
+        return $PhoneNumber.GetSubscriberNumber()
     }
-    return $PhoneNumber.GetSubscriberNumber()
 }

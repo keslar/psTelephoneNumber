@@ -22,12 +22,14 @@ function Get-TelephoneNumberNationalDestinationCode {
     [CmdletBinding()]
     [OutputType([NationalDestinationCode])]
     param (
-        [Parameter(ParameterSetName = 'ByTelephoneNumber', Mandatory)]
+        [Parameter(ParameterSetName = 'ByTelephoneNumber', Mandatory, ValueFromPipeline)]
         [string]$TelephoneNumber
     )
-    $PhoneNumber = [TelephoneNumber]::new($TelephoneNumber)
-    if (-not $PhoneNumber.Value) {
-        throw 'Invalid telephone number format. Please provide a valid number.'
+    process {
+        $PhoneNumber = [TelephoneNumber]::new($TelephoneNumber)
+        if (-not $PhoneNumber.Value) {
+            throw 'Invalid telephone number format. Please provide a valid number.'
+        }
+        return $PhoneNumber.GetNationalDestinationCode()
     }
-    return $PhoneNumber.GetNationalDestinationCode()
 }
