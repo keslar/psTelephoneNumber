@@ -133,8 +133,8 @@ class NationalDestinationCode {
     [bool] MatchesNumber([string]$PhoneNumber) {
         $CleanNumber = $PhoneNumber -replace '[^0-9+]', ''
         $CountryCodeResult = [CountryCode]::FindByISO($this.ISO3) | Select-Object -First 1
-        $StartsWidth = "+$($CountryCodeResult.NumericCode)$($this.Code)"
-        return $CleanNumber.StartsWith($StartsWidth)
+        $StartsWith = "+$($CountryCodeResult.NumericCode)$($this.Code)"
+        return $CleanNumber.StartsWith($StartsWith)
     }
 
     # Override ToString for better display
@@ -167,7 +167,7 @@ class NationalDestinationCode {
             return $script:cacheTelephoneNumberNationalDestinationCodes
         }
 
-        $NationalDestinationCodes = New-Object System.Collections.ArrayList
+        $NationalDestinationCodes = [System.Collections.Generic.List[NationalDestinationCode]]::new()
 
         try {
             $NationalDestinationCodeData = Import-Csv -Path (Join-Path -Path $script:cacheTelephoneNumberDataDirectory -ChildPath 'NationalDestinationCodes.csv')
@@ -177,7 +177,7 @@ class NationalDestinationCode {
 
         foreach ($Row in $NationalDestinationCodeData) {
             $Ndc = [NationalDestinationCode]::new($Row.ISO3, $Row.Code, $Row.Description, $Row.Region, [bool]::Parse($Row.IsGeographic), $Row.NumberType)
-            $NationalDestinationCodes.Add($Ndc) | Out-Null
+            $NationalDestinationCodes.Add($Ndc)
         }
         $script:cacheTelephoneNumberNationalDestinationCodes = $NationalDestinationCodes.ToArray()
         return $script:cacheTelephoneNumberNationalDestinationCodes

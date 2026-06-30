@@ -158,7 +158,7 @@ Describe "NationalDestinationCode Class" {
             }
             It "3.2.2 Should return a list of NationalDestinationCode objects" {
                 $codes = [NationalDestinationCode]::GetAllNationalDestinationCodes()
-                $codes.GetType().Name | Should -Be "object[]"
+                $codes.GetType().Name | Should -Be "NationalDestinationCode[]"
                 foreach ($code in $codes) {
                     $code.GetType().Name | Should -Be "NationalDestinationCode"
                 }
