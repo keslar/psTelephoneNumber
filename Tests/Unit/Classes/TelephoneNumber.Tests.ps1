@@ -127,9 +127,13 @@ Describe "TelephoneNumber Class" {
                 $phone = [TelephoneNumber]::new("+14125551234")
                 $phone.Format([PhoneNumberFormat]::National) | Should -Be "(412) 555-1234"
             }
-            It "2.6.2 Should return E164 for UK number in National format" {
+            It "2.6.2 Should return National format for UK number with trunk prefix" {
                 $phone = [TelephoneNumber]::new("+442079460123")
-                $phone.Format([PhoneNumberFormat]::National) | Should -Be "+442079460123"
+                $phone.Format([PhoneNumberFormat]::National) | Should -Be "0207 946 0123"
+            }
+            It "2.6.3 Should return National format for German number without trunk prefix when pattern requires it" {
+                $phone = [TelephoneNumber]::new("+493012345678")
+                $phone.Format([PhoneNumberFormat]::National) | Should -Be "301 234 5678"
             }
         }
     }

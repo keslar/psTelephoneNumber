@@ -76,6 +76,36 @@ class TelephoneNumber {
             if ($CountryCodeItem.ISO2 -eq 'US' -and $Subscriber.Value.Length -ge 7) {
                 return "({0}) {1}-{2}" -f $Ndc.Code, $Subscriber.Value.Substring(0, 3), $Subscriber.Value.Substring(3)
             }
+            try {
+                $FormatData = [SubscriberNumber]::GetSubscriberNumberFormatForCountryCode($CountryCodeItem.ISO3)
+                if ($FormatData -and $FormatData.Format) {
+                    $NationalPattern = $FormatData.Format -replace '^\+\d+\s+', ''
+                    if ($NationalPattern) {
+                        $XCount = ($NationalPattern.ToCharArray() | Where-Object { $_ -eq 'X' }).Count
+                        $CandidateDigits = @(
+                            "$($FormatData.TrunkPrefix)$($Ndc.Code)$($Subscriber.Value)" -replace '\D', ''
+                            "$($Ndc.Code)$($Subscriber.Value)" -replace '\D', ''
+                        )
+                        foreach ($Digits in $CandidateDigits) {
+                            if ($Digits.Length -eq $XCount) {
+                                $result = ''
+                                $digitIndex = 0
+                                foreach ($ch in $NationalPattern.ToCharArray()) {
+                                    if ($ch -eq 'X') {
+                                        $result += $Digits[$digitIndex]
+                                        $digitIndex++
+                                    } else {
+                                        $result += $ch
+                                    }
+                                }
+                                return $result
+                            }
+                        }
+                    }
+                }
+            } catch {
+                # No format data for this country — fall through to E.164
+            }
             return $this.Value
         }
         if ($Format -eq [PhoneNumberFormat]::RFC3966) {
