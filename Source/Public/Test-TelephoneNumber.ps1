@@ -32,8 +32,16 @@ function Test-TelephoneNumber {
     )
 
     process {
+        $CleanNumber = $Number -replace '[^0-9+]', ''
+        if (-not $CleanNumber.StartsWith('+')) {
+            $CleanNumber = $CleanNumber.Insert(0, '+')
+        }
+        if ($CleanNumber -eq '+') {
+            return [ValidationStatus]::InvalidFormat
+        }
         try {
-            $Phone = [TelephoneNumber]::new($Number)
+            $Phone = [TelephoneNumber]::new()
+            $Phone.Value = $CleanNumber
             return $Phone.Validate()
         } catch {
             return [ValidationStatus]::InvalidFormat
