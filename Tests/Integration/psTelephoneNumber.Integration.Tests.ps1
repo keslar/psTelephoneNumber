@@ -193,7 +193,7 @@ Describe 'Get-TelephoneNumberCountryCode' {
 
         It 'Resolves Canada (not USA) for a Toronto number' {
             $result = Get-TelephoneNumberCountryCode -TelephoneNumber $Script:CA_TORONTO
-            $result.ISO3 | Should -BeIn @('CAN', 'USA')  # +1 is shared; either is valid resolution
+            $result.ISO3 | Should -Be 'CAN'
         }
     }
 
