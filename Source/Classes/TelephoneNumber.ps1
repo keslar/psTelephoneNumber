@@ -98,14 +98,14 @@ class TelephoneNumber {
             if ($_ -match 'Invalid phone number format') {
                 return [ValidationStatus]::InvalidFormat
             }
-            if ($_ -match 'country code') {
-                return [ValidationStatus]::InvalidCountryCode
+            if ($_ -match 'subscriber number') {
+                return [ValidationStatus]::InvalidSubscriberNumber
             }
             if ($_ -match 'national destination code') {
                 return [ValidationStatus]::InvalidNDC
             }
-            if ($_ -match 'subscriber number') {
-                return [ValidationStatus]::InvalidSubscriberNumber
+            if ($_ -match 'country code') {
+                return [ValidationStatus]::InvalidCountryCode
             }
             return [ValidationStatus]::Incomplete
         }

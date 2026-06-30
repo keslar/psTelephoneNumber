@@ -71,7 +71,46 @@ Describe "SubscriberNumber Class" {
         }
     }
     Context "3 Static Method Tests" {
-        Context "3.1 GetSubscriberNumberFormats Method" {
+        Context "3.1 ClearCache Method" {
+            BeforeAll {
+                # Ensure the cache is populated
+                $script:cacheTelephoneNumberSubscriberNumberFormats = $null
+                $null = [SubscriberNumber]::GetSubscriberNumberFormats()
+            }
+            It "3.1.1 Should clear the cached formats" {
+                $script:cacheTelephoneNumberSubscriberNumberFormats | Should -Not -BeNullOrEmpty
+                [SubscriberNumber]::ClearCache()
+                $script:cacheTelephoneNumberSubscriberNumberFormats | Should -BeNullOrEmpty
+            }
+        }
+        Context "3.2 SetDataDirectory Method" {
+            BeforeAll {
+                $savedDataDirectory = $script:cacheTelephoneNumberDataDirectory
+            }
+            AfterAll {
+                $script:cacheTelephoneNumberDataDirectory = $savedDataDirectory
+            }
+            It "3.2.1 Should throw when directory does not exist" {
+                { [SubscriberNumber]::SetDataDirectory("C:\NonExistentPath_XYZZY") } | Should -Throw
+            }
+            It "3.2.2 Should update data directory and clear cache when valid directory is set" {
+                $script:cacheTelephoneNumberSubscriberNumberFormats = $null
+                $null = [SubscriberNumber]::GetSubscriberNumberFormats()
+                $script:cacheTelephoneNumberSubscriberNumberFormats | Should -Not -BeNullOrEmpty
+                $newDir = (Split-Path -Path (Get-Location) -Parent)
+                [SubscriberNumber]::SetDataDirectory($newDir)
+                $script:cacheTelephoneNumberSubscriberNumberFormats | Should -BeNullOrEmpty
+                $script:cacheTelephoneNumberDataDirectory | Should -Be $newDir
+                # Restore
+                [SubscriberNumber]::SetDataDirectory($savedDataDirectory)
+            }
+        }
+        Context "3.3 GetSubscriberNumberFormatForCountryCode Method" {
+            It "3.3.1 Should throw for invalid country code" {
+                { [SubscriberNumber]::GetSubscriberNumberFormatForCountryCode("ZZZ") } | Should -Throw "No subscriber number format found for country code: ZZZ"
+            }
+        }
+        Context "3.4 GetSubscriberNumberFormats Method" {
             BeforeAll {
                 # Clear the cache to ensure we are testing the file loading logic
                 $script:cacheTelephoneNumberSubscriberNumberFormats = $null

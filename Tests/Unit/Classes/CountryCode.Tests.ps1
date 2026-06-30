@@ -360,6 +360,19 @@ Describe "CountryCode Class" {
             }
         }
 
+        Context "4.9 Full constructor validation" {
+            It "4.9.1 Should throw when CountryName is null in full constructor" {
+                { [CountryCode]::new($null, "+1", "US", "USA", 840) } | Should -Throw "CountryName cannot be null or empty."
+            }
+            It "4.9.2 Should throw when Code is null in full constructor" {
+                { [CountryCode]::new("United States", $null, "US", "USA", 840) } | Should -Throw "Code cannot be null or empty."
+            }
+        }
+        Context "4.10 SetDataDirectory validation" {
+            It "4.10.1 Should throw when directory does not exist" {
+                { [CountryCode]::SetDataDirectory("C:\NonExistentPath_XYZZY") } | Should -Throw
+            }
+        }
         Context "4.8 Method Tests - FindByName([string]$name)" {
             It "4.8.1 Should return a country code object for a valid country name" {
                 $countryCode = [CountryCode]::FindByName("United States")

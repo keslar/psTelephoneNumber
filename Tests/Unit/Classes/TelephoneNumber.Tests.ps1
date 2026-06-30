@@ -101,6 +101,37 @@ Describe "TelephoneNumber Class" {
                 $subscriber | Should -Not -BeNullOrEmpty
             }
         }
+        Context "2.5 Validate Method" {
+            It "2.5.1 Should return Valid for a valid number" {
+                $phone = [TelephoneNumber]::new("+14125551234")
+                $phone.Validate() | Should -Be ([ValidationStatus]::Valid)
+            }
+            It "2.5.2 Should return InvalidCountryCode for unknown country code" {
+                $phone = [TelephoneNumber]::new()
+                $phone.Value = "+00000000000"
+                $phone.Validate() | Should -Be ([ValidationStatus]::InvalidCountryCode)
+            }
+            It "2.5.3 Should return InvalidNDC for valid country code without matching NDC" {
+                $phone = [TelephoneNumber]::new()
+                $phone.Value = "+44000000000000"
+                $phone.Validate() | Should -Be ([ValidationStatus]::InvalidNDC)
+            }
+            It "2.5.4 Should return InvalidSubscriberNumber for valid country and NDC but bad subscriber" {
+                $phone = [TelephoneNumber]::new()
+                $phone.Value = "+14125"
+                $phone.Validate() | Should -Be ([ValidationStatus]::InvalidSubscriberNumber)
+            }
+        }
+        Context "2.6 Format Method" {
+            It "2.6.1 Should return National format for US number" {
+                $phone = [TelephoneNumber]::new("+14125551234")
+                $phone.Format([PhoneNumberFormat]::National) | Should -Be "(412) 555-1234"
+            }
+            It "2.6.2 Should return E164 for UK number in National format" {
+                $phone = [TelephoneNumber]::new("+442079460123")
+                $phone.Format([PhoneNumberFormat]::National) | Should -Be "+442079460123"
+            }
+        }
     }
     Context "3 Static Method Tests" {
         Context "3.1 Parse Method" {

@@ -45,6 +45,14 @@ Describe "NationalDestinationCode Class" {
                 #$ndc.NumberType | Should -Be "unknown"
             }
         }
+        Context "1.1a Invalid ISO3" {
+            It "1.1a.1 Should throw when ISO3 is not found in 3-param constructor" {
+                { [NationalDestinationCode]::new("ZZZ", "123", "Test") } | Should -Throw "Country code with ISO3 'ZZZ' not found."
+            }
+            It "1.1a.2 Should throw when ISO3 is not found in 6-param constructor" {
+                { [NationalDestinationCode]::new("ZZZ", "123", "Test", "Region", $true, "geographic") } | Should -Throw "Country code with ISO3 'ZZZ' not found."
+            }
+        }
         Context "1.2 Validation Tests - All Parameters - CountryCode, Code, Description, Optional Parameters - Region, IsGeographic, NumberType" {
             It "1.2.1 should create an instance with all parameters" {
                 { $ndc = [NationalDestinationCode]::new("USA", "212", "New York City", "New York", $true, "geographic") } | Should -Not -Throw
@@ -161,6 +169,11 @@ Describe "NationalDestinationCode Class" {
                 $csvData = Import-Csv -Path $filePath
                 $csvData.Count | Should -Be $codes.Count
             }   
+        }
+        Context "3.2a Method Tests - GetAllNationalDestinationCodeForCountry invalid type" {
+            It "3.2a.1 Should throw for non-string, non-CountryCode input" {
+                { [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry(123) } | Should -Throw "CountryCode must be a string (ISO3) or a CountryCode object."
+            }
         }
         Context "3.3 Method Tests - GetAllNationalDestinationCodeForCountry([ContryCode])" {
             BeforeEach {
@@ -351,6 +364,9 @@ Describe "NationalDestinationCode Class" {
             $script:cacheTelephoneNumberDataDirectory | Should -Be (Split-Path -Path (Get-Location) -Parent)
             # Restore original value after test
             [NationalDestinationCode]::SetDataDirectory($savedDataDirectory)
+        }
+        It "4.2.2 Should throw when directory does not exist" {
+            { [NationalDestinationCode]::SetDataDirectory("C:\NonExistentPath_XYZZY") } | Should -Throw
         }
     }
 }
