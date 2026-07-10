@@ -151,6 +151,27 @@ Describe "TelephoneNumber Class" {
             It "Should remove all non-digit and non-plus characters but fail on number length" {
                 { [TelephoneNumber]::Parse("+1-555-123-4567 ext. 89") } | Should -Throw "Invalid phone number format. Must contain a valid country code and national destination code."
             }
+            It "Should disambiguate NDC prefix overlaps by matching the longest code first" {
+                # Bahrain (BHR, +973) has NDC "3" as a prefix of "32", "33", "34", etc.
+                # Without length-descending sort, number +97332000000 would match "3" instead of "32"
+                $number = [TelephoneNumber]::new("+973 3200 0000")
+                $ndc = $number.GetNationalDestinationCode()
+                $ndc.Code | Should -Be "32"
+                $ndc.ISO3 | Should -Be "BHR"
+            }
+            It "Should parse a sub-country code number (American Samoa, +1-684)" {
+                $parsedNumber = [TelephoneNumber]::Parse("+1 (684) 555-1234")
+                $parsedNumber | Should -Be "+16845551234"
+            }
+            It "Should parse sub-country code and return correct components" {
+                $number = [TelephoneNumber]::new("+1 (684) 555-1234")
+                $countryCode = $number.GetCountryCode()
+                $countryCode.ISO3 | Should -Be "ASM"
+                $ndc = $number.GetNationalDestinationCode()
+                $ndc.Code | Should -Be "684"
+                $subscriber = $number.GetSubscriberNumber()
+                $subscriber.Value | Should -Be "5551234"
+            }
         }
     }
 }#

@@ -109,7 +109,7 @@ class TelephoneNumber {
             $CountryCodeItem = $this.GetCountryCode()
             $Ndc = $this.GetNationalDestinationCode()
             $Subscriber = $this.GetSubscriberNumber()
-            return "tel:{0}-{1}-{2}" -f $CountryCodeItem.Code, $Ndc.Code, $Subscriber.Value
+            return "tel:+{0}-{1}-{2}" -f $CountryCodeItem.NumericCode, $Ndc.Code, $Subscriber.Value
         }
         return $this.Value
     }
@@ -156,10 +156,10 @@ class TelephoneNumber {
             foreach ($CountryCodeEntry in $CountryCodesFound) {
                 $NdcList = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCodeEntry.ISO3)
                 $SelectedCountryCode = $CountryCodeEntry
-                $CountryCodeCode = $CountryCodeEntry.Code
+                $CountryCodePrefix = "+$($CountryCodeEntry.NumericCode)"
                 foreach ($Ndc in $NdcList) {
                     $NdcCode = $Ndc.Code
-                    if ($CleanNumber.StartsWith("$CountryCodeCode$NdcCode")) {
+                    if ($CleanNumber.StartsWith("$CountryCodePrefix$NdcCode")) {
                         $NdcFound = $true
                         break
                     }
@@ -205,7 +205,8 @@ class TelephoneNumber {
         if ($null -eq $Ndc) {
             throw [System.ArgumentException]::new("Unable to determine national destination code for phone number: $($this.Value). Cannot determine subscriber number without a valid national destination code.")
         }
-        $SubscriberNumber = [SubscriberNumber]::new($CleanNumber.Substring($CountryCodeItem.Code.Length + $Ndc.Code.Length), $CountryCodeItem.ISO3)
+        $CountryCodePrefix = "+$($CountryCodeItem.NumericCode)"
+        $SubscriberNumber = [SubscriberNumber]::new($CleanNumber.Substring($CountryCodePrefix.Length + $Ndc.Code.Length), $CountryCodeItem.ISO3)
         return $SubscriberNumber
     }
 
@@ -221,7 +222,7 @@ class TelephoneNumber {
         $CountryCodes = [CountryCode]::GetAllCountryCodes()
         $FoundCountryCodes = @()
         foreach ($CountryCodeEntry in $CountryCodes) {
-            if ($PhoneNumber.StartsWith($CountryCodeEntry.Code)) {
+            if ($CountryCodeEntry.MatchesNumber($PhoneNumber)) {
                 $FoundCountryCodes += $CountryCodeEntry
             }
         }
@@ -233,8 +234,9 @@ class TelephoneNumber {
         $SelectedNdc = $null
         foreach ($CountryCodeEntry in $FoundCountryCodes) {
             $NdcList = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCodeEntry.ISO3)
+            $CountryCodePrefix = "+$($CountryCodeEntry.NumericCode)"
             foreach ($NdcEntry in $NdcList) {
-                $CountryCodePlusNdc = "$($CountryCodeEntry.Code)$($NdcEntry.Code)"
+                $CountryCodePlusNdc = "$CountryCodePrefix$($NdcEntry.Code)"
                 if ($PhoneNumber.StartsWith($CountryCodePlusNdc)) {
                     $SelectedCountryCode = $CountryCodeEntry
                     $SelectedNdc = $NdcEntry
@@ -252,7 +254,8 @@ class TelephoneNumber {
 
         # TODO(crk4): Improve subscriber number extraction logic. Currently assumes subscriber number
         # is the remaining digits after removing CC and NDC. This may not hold for all numbering plans.
-        $null = [SubscriberNumber]::new($PhoneNumber.Substring($SelectedCountryCode.Code.Length + $SelectedNdc.Code.Length), $SelectedCountryCode.ISO3)
+        $CountryCodePrefix = "+$($SelectedCountryCode.NumericCode)"
+        $null = [SubscriberNumber]::new($PhoneNumber.Substring($CountryCodePrefix.Length + $SelectedNdc.Code.Length), $SelectedCountryCode.ISO3)
 
         return $PhoneNumber
     }

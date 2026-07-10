@@ -179,7 +179,12 @@ class NationalDestinationCode {
             $Ndc = [NationalDestinationCode]::new($Row.ISO3, $Row.Code, $Row.Description, $Row.Region, [bool]::Parse($Row.IsGeographic), $Row.NumberType)
             $NationalDestinationCodes.Add($Ndc)
         }
-        $script:cacheTelephoneNumberNationalDestinationCodes = $NationalDestinationCodes.ToArray()
+        # Sort by code length descending so longer, more specific codes are matched first.
+        # This prevents a short code (e.g., "3") from incorrectly matching when a longer
+        # code (e.g., "32") is the correct match for a given phone number.
+        $script:cacheTelephoneNumberNationalDestinationCodes = [NationalDestinationCode[]](
+            $NationalDestinationCodes | Sort-Object { $_.Code.Length } -Descending
+        )
         return $script:cacheTelephoneNumberNationalDestinationCodes
     }
 

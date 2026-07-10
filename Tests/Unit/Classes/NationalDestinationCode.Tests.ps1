@@ -188,7 +188,7 @@ Describe "NationalDestinationCode Class" {
             }
             #    # Test with a Valid CountryCode  (country code exist)
             It "3.3.2 Should return a list of NationalDestinationCode objects for a valid CountryCode" {
-                $countryCode = ([CountryCode]::FindByISO("USA"))[0]
+                $countryCode = [CountryCode]::FindByISO("USA")
                 $countryCode | Should -Not -BeNullOrEmpty
                 { $codes = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($countryCode) } | Should -Not -Throw
                 $codes = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($countryCode)
