@@ -43,7 +43,7 @@ Task dependency chain: `TestUnit` depends on `Analyze`, `Build` depends on `Test
 
 ## Key Quirks
 
-- **`$env:PSGALLERY_KEY`** (no underscore) is what `Build/.build.ps1` checks for publish. The release workflow sets **`PS_GALLERY_KEY`** (with underscore) — this is a known mismatch unless the build script is updated to check both.
+- **`$env:PSGALLERY_KEY`** / **`$env:PS_GALLERY_KEY`**: the build script checks both (legacy and GitHub Actions convention). Set either for publishing.
 - **Code signing**: only runs on local Windows (skipped in CI). Needs a valid cert in `Cert:\CurrentUser\My`. Self-signed certs accepted with relaxed status check.
 - **Shared +1 country code**: NDC is used to disambiguate US (NDC 200‑999) vs Canada vs Caribbean.
 - Commit messages should follow Conventional Commits for automatic version bumping: `feat:`, `fix:`, `BREAKING CHANGE`.

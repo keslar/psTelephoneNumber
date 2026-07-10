@@ -467,10 +467,11 @@ task Publish {
 
     # NuGetApiKey is optional - private repos using credential-based or
     # anonymous auth (e.g. internal NuGet feeds, local file shares) don't need it.
-    if ($env:PSGALLERY_KEY) {
-        $publishParams['NuGetApiKey'] = $env:PSGALLERY_KEY
-    } else {
-        #Write-Build Yellow "  PSGALLERY_KEY not set - publishing without API key."
+    # Check both PSGALLERY_KEY (legacy) and PS_GALLERY_KEY (GitHub Actions convention).
+    $nuGetKey = $env:PSGALLERY_KEY
+    if (-not $nuGetKey) { $nuGetKey = $env:PS_GALLERY_KEY }
+    if ($nuGetKey) {
+        $publishParams['NuGetApiKey'] = $nuGetKey
     }
 
     Publish-Module @publishParams
