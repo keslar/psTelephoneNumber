@@ -192,20 +192,18 @@ class CountryCode {
         return $Results.ToArray()
     }
 
-    # Find a country code by its ISO code (either ISO2 or ISO3), returns a list of matching CountryCode objects
-    static [object[]] FindByISO([string]$ISO) {
+    # Find a country code by its ISO code (either ISO2 or ISO3), returns a single CountryCode or $null
+    static [CountryCode] FindByISO([string]$ISO) {
         if ($ISO.Length -ne 2 -and $ISO.Length -ne 3) {
             throw [System.ArgumentException]::new('ISO code must be either 2 or 3 characters long.')
         }
         $Codes = [CountryCode]::GetAllCountryCodes()
-        $Results = [System.Collections.Generic.List[CountryCode]]::new()
         foreach ($CodeEntry in $Codes) {
             if ($CodeEntry.ISO2 -eq $ISO -or $CodeEntry.ISO3 -eq $ISO) {
-                $Results.Add($CodeEntry)
+                return $CodeEntry
             }
         }
-        if ($Results.Count -eq 0) { return @() }
-        return $Results.ToArray()
+        return $null
     }
 
     # Find a country code by its name, returns a list of matching CountryCode objects

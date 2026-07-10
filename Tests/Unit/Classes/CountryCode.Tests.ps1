@@ -317,11 +317,10 @@ Describe "CountryCode Class" {
             It "4.7.1 Should return a country code object for a valid 2 character ISO code" {
                 $countryCode = [CountryCode]::FindByISO("US")
                 # test return type
-                $countryCode | Should -Not -BeNull
-                $countryCode -is [system.Collections.IEnumerable] | Should -Be $true
-                $countryCode.Count | Should -Be 1
+                $countryCode | Should -Not -BeNullOrEmpty
+                $countryCode -is [CountryCode] | Should -Be $true
                 # test properties of the returned object
-                $countryCode.CountryName | Should -Be @('United States')
+                $countryCode.CountryName | Should -Be 'United States'
                 $countryCode.Code | Should -Be "+1"
                 $countryCode.ISO2 | Should -Be "US"
                 $countryCode.ISO3 | Should -Be "USA"
@@ -331,11 +330,10 @@ Describe "CountryCode Class" {
             It "4.7.2 Should return a country code object for a valid 3 character ISO code" {
                 $countryCode = [CountryCode]::FindByISO("USA")
                 # test return type
-                $countryCode | Should -Not -BeNull
-                $countryCode -is [system.Collections.IEnumerable] | Should -Be $true
-                $countryCode.Count | Should -Be 1
+                $countryCode | Should -Not -BeNullOrEmpty
+                $countryCode -is [CountryCode] | Should -Be $true
                 # test properties of the returned object
-                $countryCode.CountryName | Should -Be @('United States')
+                $countryCode.CountryName | Should -Be 'United States'
                 $countryCode.Code | Should -Be "+1"
                 $countryCode.ISO2 | Should -Be "US"
                 $countryCode.ISO3 | Should -Be "USA"

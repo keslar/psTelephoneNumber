@@ -35,10 +35,10 @@ function Get-TelephoneNumberNationalDestinationCodes {
         [Parameter(ParameterSetName = 'ByCode', Mandatory)]
         [string]$CallingCode
     )
-    if ($ISO) {
-        $CountryCodes = [CountryCode]::FindByISO($ISO)
+    $CountryCodes = if ($ISO) {
+        @([CountryCode]::FindByISO($ISO))
     } else {
-        $CountryCodes = [CountryCode]::FindByCode($CallingCode)
+        [CountryCode]::FindByCode($CallingCode)
     }
 
     $NationalDestinationCodes = [System.Collections.Generic.List[NationalDestinationCode]]::new()

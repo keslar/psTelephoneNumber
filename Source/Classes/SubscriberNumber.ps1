@@ -69,10 +69,10 @@ class SubscriberNumber {
             $Format = [SubscriberNumber]::GetSubscriberNumberFormatForCountryCode($ISO)
             $NumberToValidate = $this.Value -replace '\D', ''
             $CountryCodeItem = [CountryCode]::FindByISO($ISO)
-            if ($CountryCodeItem.Count -eq 0) {
+            if ($null -eq $CountryCodeItem) {
                 throw [System.ArgumentException]::new("Country code with ISO '$ISO' not found.")
             }
-            $NationalDestinationCodes = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCodeItem[0])
+            $NationalDestinationCodes = [NationalDestinationCode]::GetAllNationalDestinationCodeForCountry($CountryCodeItem)
             $MaxNdcLength = 1
             $MinNdcLength = 100
             foreach ($Ndc in $NationalDestinationCodes) {

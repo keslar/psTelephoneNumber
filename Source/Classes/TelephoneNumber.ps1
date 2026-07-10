@@ -73,9 +73,6 @@ class TelephoneNumber {
             $CountryCodeItem = $this.GetCountryCode()
             $Ndc = $this.GetNationalDestinationCode()
             $Subscriber = $this.GetSubscriberNumber()
-            if ($CountryCodeItem.ISO2 -eq 'US' -and $Subscriber.Value.Length -ge 7) {
-                return "({0}) {1}-{2}" -f $Ndc.Code, $Subscriber.Value.Substring(0, 3), $Subscriber.Value.Substring(3)
-            }
             try {
                 $FormatData = [SubscriberNumber]::GetSubscriberNumberFormatForCountryCode($CountryCodeItem.ISO3)
                 if ($FormatData -and $FormatData.Format) {

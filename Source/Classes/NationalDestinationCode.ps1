@@ -76,7 +76,7 @@ class NationalDestinationCode {
         }
 
         $this.ISO3 = $ISO3
-        $CountryCodeResult = [CountryCode]::FindByISO($ISO3) | Select-Object -First 1
+        $CountryCodeResult = [CountryCode]::FindByISO($ISO3)
         if ($null -eq $CountryCodeResult) {
             throw [System.ArgumentException]::new("Country code with ISO3 '$ISO3' not found.")
         }
@@ -101,7 +101,7 @@ class NationalDestinationCode {
 
         $this.ISO3 = $ISO3
 
-        $CountryCodeResult = [CountryCode]::FindByISO($ISO3) | Select-Object -First 1
+        $CountryCodeResult = [CountryCode]::FindByISO($ISO3)
         if ($null -eq $CountryCodeResult) {
             throw [System.ArgumentException]::new("Country code with ISO3 '$ISO3' not found.")
         }
@@ -132,14 +132,14 @@ class NationalDestinationCode {
     # Check if a phone number starts with this NDC, ignoring any non-digit characters
     [bool] MatchesNumber([string]$PhoneNumber) {
         $CleanNumber = $PhoneNumber -replace '[^0-9+]', ''
-        $CountryCodeResult = [CountryCode]::FindByISO($this.ISO3) | Select-Object -First 1
+        $CountryCodeResult = [CountryCode]::FindByISO($this.ISO3)
         $StartsWith = "+$($CountryCodeResult.NumericCode)$($this.Code)"
         return $CleanNumber.StartsWith($StartsWith)
     }
 
     # Override ToString for better display
     [string] ToString() {
-        $CountryCodeResult = [CountryCode]::FindByISO($this.ISO3) | Select-Object -First 1
+        $CountryCodeResult = [CountryCode]::FindByISO($this.ISO3)
         return "$($this.Code) : $($CountryCodeResult.CountryName) ($($CountryCodeResult.Code)) - $($this.Description)"
     }
 
@@ -186,11 +186,10 @@ class NationalDestinationCode {
     # Get all National Destination Codes for a Country
     static [object[]] GetAllNationalDestinationCodeForCountry([object]$CountryCodeInput) {
         if ($CountryCodeInput.GetType().Name -eq 'String') {
-            $CountryCodesFound = [CountryCode]::FindByISO($CountryCodeInput)
-            if ($CountryCodesFound.Count -eq 0) {
+            $CountryCodeItem = [CountryCode]::FindByISO($CountryCodeInput)
+            if ($null -eq $CountryCodeItem) {
                 throw [System.ArgumentException]::new("Country code with ISO3 '$CountryCodeInput' not found.")
             }
-            $CountryCodeItem = $CountryCodesFound[0]
         } else {
             if ($CountryCodeInput.GetType().Name -ne 'CountryCode') {
                 throw [System.ArgumentException]::new('CountryCode must be a string (ISO3) or a CountryCode object.')
@@ -203,11 +202,11 @@ class NationalDestinationCode {
     }
 
     static [NationalDestinationCode] FindByCode([string]$ISO, [string]$Code) {
-        $CountryCodeResults = [CountryCode]::FindByISO($ISO)
-        if ($CountryCodeResults.Count -eq 0) {
+        $CountryCodeResult = [CountryCode]::FindByISO($ISO)
+        if ($null -eq $CountryCodeResult) {
             return $null
         }
-        return [NationalDestinationCode]::GetAllNationalDestinationCodes() | Where-Object { ($_.ISO3 -eq $CountryCodeResults[0].ISO3) -and ($_.Code -eq $Code) }
+        return [NationalDestinationCode]::GetAllNationalDestinationCodes() | Where-Object { ($_.ISO3 -eq $CountryCodeResult.ISO3) -and ($_.Code -eq $Code) }
     }
 
     static [NationalDestinationCode] FindByCode([int]$NumericCode, [string]$Code) {
